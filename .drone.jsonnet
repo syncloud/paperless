@@ -1,6 +1,6 @@
 local name = 'paperless';
 local browser = 'chrome';
-local version = '6.1.0';
+local version = '2.11.6';
 local nginx = '1.24.0';
 local postgresql = "15-bullseye";
 local redis = "7.0.15";
@@ -71,7 +71,7 @@ local build(arch, test_ui, dind) = [{
     },
     {
       name: 'paperless',
-      image: "chocobozzz/paperless:v" + version + "-bookworm",
+      image: "ghcr.io/paperless-ngx/paperless-ngx:" + version,
       commands: [
         './paperless/build.sh',
       ],
