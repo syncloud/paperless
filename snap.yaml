@@ -1,0 +1,64 @@
+apps:
+  nginx:
+    user: paperless
+    command: bin/service.nginx.sh
+    daemon: simple
+    plugs:
+    - network
+    - network-bind
+    restart-condition: always
+  paperless:
+    user: paperless
+    command: bin/service.paperless.sh
+    daemon: simple
+    plugs:
+    - network
+    - network-bind
+    restart-condition: always
+  postgresql:
+    user: paperless
+    command: bin/service.postgresql.sh
+    daemon: forking
+    plugs:
+      - network
+      - network-bind
+    restart-condition: always
+  redis:
+    user: paperless
+    daemon: simple
+    command: bin/service.redis.sh
+    restart-condition: always
+    before: [paperless]
+
+  npm:
+    command: paperless/bin/npm
+
+  node:
+    command: paperless/bin/node
+ 
+  psql:
+    command: bin/psql.sh
+
+  pgdumpall:
+    command: bin/pg_dumpall.sh
+
+  storage-change:
+    command: bin/cli storage-change
+
+  access-change:
+    command: bin/cli access-change
+
+  backup-pre-stop:
+    command: bin/cli backup-pre-stop
+
+  restore-pre-start:
+    command: bin/cli restore-pre-start
+
+  restore-post-start:
+    command: bin/cli restore-post-start
+
+confinement: strict
+description: PeerTube
+grade: stable
+name: paperless
+summary: paperless
