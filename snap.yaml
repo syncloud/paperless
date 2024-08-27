@@ -37,9 +37,6 @@ apps:
     command: bin/service.redis.sh
     restart-condition: always
     before: [celery]
-
-  python:
-    command: paperless/bin/python
  
   psql:
     command: bin/psql.sh
@@ -66,6 +63,4 @@ confinement: strict
 description: Paperless
 grade: stable
 name: paperless
-summary: paperless
-ame: paperless
 summary: paperless
