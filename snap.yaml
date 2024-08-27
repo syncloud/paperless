@@ -38,11 +38,8 @@ apps:
     restart-condition: always
     before: [celery]
 
-  npm:
-    command: paperless/bin/npm
-
-  node:
-    command: paperless/bin/node
+  python:
+    command: paperless/bin/python
  
   psql:
     command: bin/psql.sh
@@ -66,7 +63,9 @@ apps:
     command: bin/cli restore-post-start
 
 confinement: strict
-description: PeerTube
+description: Paperless
 grade: stable
 name: paperless
+summary: paperless
+ame: paperless
 summary: paperless
