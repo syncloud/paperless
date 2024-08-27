@@ -6,4 +6,4 @@ LIBS=$LIBS:$(echo ${DIR}/usr/lib)
 LIBS=$LIBS:$(echo ${DIR}/usr/local/lib)
 export MAGICK_HOME=${DIR}/ImageMagick
 export MAGICK_CODER_MODULE_PATH=$(echo ${DIR}/usr/lib/*-linux*/ImageMagick-*/modules-*)
-exec ${DIR}/lib/*-linux*/ld-*.so --library-path $LIBS ${DIR}/usr/local/bin/python3 "$@"
+exec ${DIR}/lib/*-linux*/ld-*.so* --library-path $LIBS ${DIR}/usr/local/bin/python3 "$@"
