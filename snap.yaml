@@ -15,6 +15,14 @@ apps:
     - network
     - network-bind
     restart-condition: always
+  celery-beat:
+    user: paperless
+    command: bin/service.celery-beat.sh
+    daemon: simple
+    plugs:
+    - network
+    - network-bind
+    restart-condition: always
   postgresql:
     user: paperless
     command: bin/service.postgresql.sh
@@ -28,7 +36,7 @@ apps:
     daemon: simple
     command: bin/service.redis.sh
     restart-condition: always
-    before: [paperless]
+    before: [celery]
 
   npm:
     command: paperless/bin/npm
