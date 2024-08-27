@@ -7,9 +7,9 @@ apps:
     - network
     - network-bind
     restart-condition: always
-  paperless:
+  celery:
     user: paperless
-    command: bin/service.paperless.sh
+    command: bin/service.celery.sh
     daemon: simple
     plugs:
     - network
