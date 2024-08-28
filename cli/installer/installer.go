@@ -26,7 +26,7 @@ type Variables struct {
 	Secret      string
 	DatabaseDir string
 	DataDir     string
-	AppDir      srting
+	AppDir      string
 }
 
 type Installer struct {
