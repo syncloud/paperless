@@ -8,7 +8,6 @@ import (
 	"github.com/syncloud/golib/linux"
 	"github.com/syncloud/golib/platform"
 	"go.uber.org/zap"
-	"time"
 
 	"os"
 	"path"
@@ -87,74 +86,6 @@ func (i *Installer) Configure() error {
 		if err != nil {
 			return err
 		}
-	}
-
-	err := i.registerOIDC()
-	if err != nil {
-		return err
-	}
-
-	err = i.restartPeertube(err)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (i *Installer) registerOIDC() error {
-	ready := false
-	attempts := 10
-	attempt := 0
-	for !ready {
-		if attempt > attempts {
-			return fmt.Errorf("cannot find plugin table")
-		}
-		err := i.database.Execute(App, "select * from plugin")
-		if err != nil {
-			i.logger.Info("waiting for plugin table", zap.Int("attempt", attempt), zap.Error(err))
-			attempt++
-			time.Sleep(10 * time.Second)
-		} else {
-			ready = true
-		}
-	}
-
-	password, err := i.platformClient.RegisterOIDCClient(App, "/plugins/auth-openid-connect/router/code-cb", false, "client_secret_basic")
-	if err != nil {
-		return err
-	}
-
-	err = i.executor.Run("snap",
-		"run", "paperless.node",
-		fmt.Sprintf("%s/paperless/app/dist/scripts/plugin/install.js", AppDir),
-		"-p", fmt.Sprintf("%s/paperless/app/plugins/paperless-plugin-auth-openid-connect", AppDir),
-	)
-	if err != nil {
-		i.logger.Error("failed to install plugin", zap.Error(err))
-		return err
-	}
-
-	authUrl, err := i.platformClient.GetAppUrl("auth")
-	if err != nil {
-		return err
-	}
-
-	settings := `update plugin set settings = '{`
-	settings += `"scope": "openid email profile groups",`
-	settings += fmt.Sprintf(`"client-id": "%s",`, App)
-	settings += fmt.Sprintf(`"discover-url": "%s",`, authUrl)
-	settings += fmt.Sprintf(`"client-secret": "%s",`, password)
-	settings += `"mail-property": "email",`
-	settings += `"auth-display-name": "My Syncloud",`
-	settings += `"username-property": "preferred_username",`
-	settings += `"role-property": "groups",`
-	settings += `"group-property": "groups",`
-	settings += `"signature-algorithm": "RS256"`
-	settings += `}' where name = 'auth-openid-connect'`
-	err = i.database.Execute(App, settings)
-	if err != nil {
-		return err
 	}
 
 	return nil
@@ -250,17 +181,8 @@ func (i *Installer) AccessChange() error {
 	if err != nil {
 		return err
 	}
-	err = i.registerOIDC()
-	if err != nil {
-		return err
-	}
-	err = i.restartPeertube(err)
-	return err
-}
 
-func (i *Installer) restartPeertube(err error) error {
-	err = i.platformClient.RestartService("paperless.paperless")
-	return err
+	return nil
 }
 
 func (i *Installer) StorageChange() error {
@@ -270,23 +192,6 @@ func (i *Installer) StorageChange() error {
 	}
 	err = i.createMissingDirs(
 		path.Join(storageDir, "tmp"),
-		path.Join(storageDir, "tmp-persistent"),
-		path.Join(storageDir, "bin"),
-		path.Join(storageDir, "avatars"),
-		path.Join(storageDir, "web-videos"),
-		path.Join(storageDir, "streaming-playlists"),
-		path.Join(storageDir, "original-video-files"),
-		path.Join(storageDir, "redundancy"),
-		path.Join(storageDir, "logs"),
-		path.Join(storageDir, "previews"),
-		path.Join(storageDir, "thumbnails"),
-		path.Join(storageDir, "storyboards"),
-		path.Join(storageDir, "torrents"),
-		path.Join(storageDir, "captions"),
-		path.Join(storageDir, "cache"),
-		path.Join(storageDir, "well-known"),
-		path.Join(storageDir, "client-overrides"),
-		path.Join(DataDir, "plugins"),
 	)
 	if err != nil {
 		return err
