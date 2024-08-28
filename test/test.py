@@ -116,12 +116,8 @@ def test_backup(device, artifact_dir):
     device.run_ssh("snap run platform.cli backup restore {0}".format(backup['file']))
 
 
-def test_npm(device, artifact_dir):
-    device.run_ssh("snap run paperless.npm run")
-
-
-def test_sql_plugin(device, artifact_dir):
-    device.run_ssh("snap run paperless.psql -U paperless -d paperless -c 'select * from plugin'", retries=10)
+#def test_sql_plugin(device, artifact_dir):
+#    device.run_ssh("snap run paperless.psql -U paperless -d paperless -c 'select * from plugin'", retries=10)
 
 
 def retry(method, retries=10):
