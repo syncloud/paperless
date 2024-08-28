@@ -27,6 +27,7 @@ type Variables struct {
 	DatabaseDir string
 	DataDir     string
 	AppDir      string
+	CommonDir   string
 }
 
 type Installer struct {
@@ -338,6 +339,7 @@ func (i *Installer) UpdateConfigs() error {
 		DatabaseDir: i.database.DatabaseDir(),
 		DataDir:     DataDir,
 		AppDir:      AppDir,
+		CommonDir:   CommonDir,
 	}
 
 	err = config.Generate(
