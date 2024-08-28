@@ -26,6 +26,7 @@ type Variables struct {
 	Secret      string
 	DatabaseDir string
 	DataDir     string
+	AppDir      srting
 }
 
 type Installer struct {
@@ -336,6 +337,7 @@ func (i *Installer) UpdateConfigs() error {
 		Secret:      secret,
 		DatabaseDir: i.database.DatabaseDir(),
 		DataDir:     DataDir,
+		AppDir:      AppDir,
 	}
 
 	err = config.Generate(
