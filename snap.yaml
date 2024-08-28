@@ -1,7 +1,7 @@
 apps:
-  nginx:
+  gunicorn:
     user: paperless
-    command: bin/service.nginx.sh
+    command: bin/service.gunicorn.sh
     daemon: simple
     plugs:
     - network

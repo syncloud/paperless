@@ -56,20 +56,6 @@ local build(arch, test_ui, dind) = [{
         },
 
     {
-      name: 'nginx',
-      image: 'nginx:' + nginx,
-      commands: [
-        './nginx/build.sh',
-      ],
-    },
-    {
-      name: 'nginx test',
-      image: 'syncloud/platform-buster-' + arch + ':' + platform,
-      commands: [
-        './nginx/test.sh',
-      ],
-    },
-    {
       name: 'paperless',
       image: "ghcr.io/paperless-ngx/paperless-ngx:" + version,
       commands: [
