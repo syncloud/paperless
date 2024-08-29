@@ -27,6 +27,7 @@ type Variables struct {
 	DataDir     string
 	AppDir      string
 	CommonDir   string
+	Url         string
 }
 
 type Installer struct {
@@ -223,12 +224,24 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
-	err = createMissingDir(path.Join(DataDir, "nginx"))
+	err = createMissingDir(
+		path.Join(DataDir, "nginx"),
+		path.Join(DataDir, "data"),
+		path.Join(DataDir, "consume"),
+		path.Join(DataDir, "media"),
+		path.Join(DataDir, "static"),
+		path.Join(DataDir, "trash"),
+	)
 	if err != nil {
 		return err
 	}
 
 	domain, err := i.platformClient.GetAppDomainName(App)
+	if err != nil {
+		return err
+	}
+
+	url, err := i.platformClient.GetAppUrl(App)
 	if err != nil {
 		return err
 	}
@@ -245,6 +258,7 @@ func (i *Installer) UpdateConfigs() error {
 		DataDir:     DataDir,
 		AppDir:      AppDir,
 		CommonDir:   CommonDir,
+		Url:         url,
 	}
 
 	err = config.Generate(
