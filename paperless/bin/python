@@ -1,5 +1,6 @@
 #!/bin/bash -xe
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
+#DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
+DIR=/snap/paperless/current/paperless
 LIBS=$(echo ${DIR}/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo ${DIR}/usr/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo ${DIR}/usr/lib)
