@@ -191,8 +191,12 @@ func (i *Installer) StorageChange() error {
 	if err != nil {
 		return err
 	}
-	err = i.createMissingDirs(
-		path.Join(storageDir, "tmp"),
+	err = linux.CreateMissingDirs(
+		path.Join(storageDir, "data"),
+		path.Join(storageDir, "consume"),
+		path.Join(storageDir, "media"),
+		path.Join(storageDir, "static"),
+		path.Join(storageDir, "trash"),
 	)
 	if err != nil {
 		return err
@@ -220,18 +224,6 @@ func (i *Installer) UpdateConfigs() error {
 	}
 
 	err = i.StorageChange()
-	if err != nil {
-		return err
-	}
-
-	err = linux.CreateMissingDirs(
-		path.Join(DataDir, "nginx"),
-		path.Join(DataDir, "data"),
-		path.Join(DataDir, "consume"),
-		path.Join(DataDir, "media"),
-		path.Join(DataDir, "static"),
-		path.Join(DataDir, "trash"),
-	)
 	if err != nil {
 		return err
 	}
@@ -302,7 +294,6 @@ func (i *Installer) RestorePreStart() error {
 func (i *Installer) RestorePostStart() error {
 	return i.Configure()
 }
-
 
 func getOrCreateUuid(file string) (string, error) {
 	_, err := os.Stat(file)
