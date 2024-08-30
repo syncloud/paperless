@@ -224,7 +224,7 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
-	err = createMissingDir(
+	err = linux.createMissingDirs(
 		path.Join(DataDir, "nginx"),
 		path.Join(DataDir, "data"),
 		path.Join(DataDir, "consume"),
@@ -303,27 +303,6 @@ func (i *Installer) RestorePostStart() error {
 	return i.Configure()
 }
 
-func (i *Installer) createMissingDirs(dirs ...string) error {
-	for _, dir := range dirs {
-		err := createMissingDir(dir)
-		if err != nil {
-			i.logger.Error("cannot create dir", zap.String("dir", dir), zap.Error(err))
-			return err
-		}
-	}
-	return nil
-}
-
-func createMissingDir(dir string) error {
-	_, err := os.Stat(dir)
-	if os.IsNotExist(err) {
-		err = os.Mkdir(dir, 0755)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
 
 func getOrCreateUuid(file string) (string, error) {
 	_, err := os.Stat(file)
