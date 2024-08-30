@@ -1,0 +1,11 @@
+#!/bin/bash -e
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
+LIBS=$(echo ${DIR}/lib/*-linux-gnu*)
+LIBS=$LIBS:$(echo ${DIR}/lib/*-linux-gnu*)
+USR_LIB=$(echo ${DIR}/usr/lib/*-linux-gnu*)
+LIBS=$LIBS:$USR_LIB
+LIBS=$LIBS:$(echo ${DIR}/usr/local/lib)
+#export LD_PRELOAD=$(readlink -f ${DIR}/usr/lib/*-linux-gnu*/libjemalloc.so)
+export MAGICK_CODER_MODULE_PATH=$(echo $USR_LIB/ImageMagick-*/modules-Q*/coders)
+export MAGICK_CONFIGURE_PATH=$(echo $DIR/etc/ImageMagick-*)
+exec ${DIR}/lib*/*-linux*/ld-*.so --library-path $LIBS ${DIR}/usr/bin/convert-im6.q16 "$@"
