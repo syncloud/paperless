@@ -9,4 +9,4 @@ cp -r /usr ${BUILD_DIR}
 cp -r /lib ${BUILD_DIR}
 sed -i 's#bind.*=.*#bind="unix:/var/snap/paperless/common/web.socket"#g' ${BUILD_DIR}/usr/src/paperless/gunicorn.conf.py
 grep bind ${BUILD_DIR}/usr/src/paperless/gunicorn.conf.py
-cp --remove-destination ${DIR}/bin/* ${BUILD_DIR}/bin
+cp --remove-destination -R ${DIR}/bin ${BUILD_DIR}/sbin
