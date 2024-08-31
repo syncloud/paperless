@@ -1,4 +1,4 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 echo "dir: $DIR"
 DIR=/snap/paperless/current/paperless
@@ -9,3 +9,4 @@ LIBS=$LIBS:$(echo ${DIR}/usr/local/lib)
 export MAGICK_HOME=${DIR}/ImageMagick
 export MAGICK_CODER_MODULE_PATH=$(echo ${DIR}/usr/lib/*-linux*/ImageMagick-*/modules-*)
 exec ${DIR}/lib/*-linux*/ld-*.so* --library-path $LIBS ${DIR}/usr/local/bin/python3 "$@"
+
