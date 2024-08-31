@@ -89,7 +89,14 @@ func (i *Installer) Configure() error {
 		}
 	}
 
-	err := i.executor.Run(fmt.Sprint(AppDir, "/bin/configure.sh"))
+	err := linux.CreateMissingDirs(
+		path.Join(DataDir, "tmp"),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = i.executor.Run(fmt.Sprint(AppDir, "/bin/configure.sh"))
 	if err != nil {
 		return err
 	}
@@ -313,4 +320,3 @@ func getOrCreateUuid(file string) (string, error) {
 	}
 	return string(content), nil
 }
-
