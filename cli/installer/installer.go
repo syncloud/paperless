@@ -89,7 +89,12 @@ func (i *Installer) Configure() error {
 		}
 	}
 
-	return nil
+	err := i.executor.Run(fmt.Sprint(AppDir, "/bin/db-migrate.sh"))
+	if err != nil {
+		return err
+	}
+
+	return i.UpdateVersion()
 }
 
 func (i *Installer) IsInstalled() bool {
@@ -123,7 +128,7 @@ func (i *Installer) Initialize() error {
 		return err
 	}
 
-	return i.UpdateVersion()
+	return nil
 }
 
 func (i *Installer) Upgrade() error {
@@ -140,7 +145,7 @@ func (i *Installer) Upgrade() error {
 		return err
 	}
 
-	return i.UpdateVersion()
+	return nil
 }
 
 func (i *Installer) PreRefresh() error {
