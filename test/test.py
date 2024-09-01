@@ -61,6 +61,10 @@ def test_activate_device(device):
     device.run_ssh('snap refresh platform --channel=master')
 
 
+def test_ca_cert(device, app_domain):
+    device.run_ssh('CURL_CA_BUNDLE=/var/snap/platform/current/syncloud.ca.crt curl -v https://{0} 2>&1 > {1}/ssl.ca.log'.format(app_domain, TMP_DIR))
+
+
 def test_install(app_archive_path, device_host, device_password, device):
     device.run_ssh('touch /var/snap/platform/current/NODE_TLS_REJECT_UNAUTHORIZED_0')
     local_install(device_host, device_password, app_archive_path)
@@ -75,10 +79,6 @@ def __log_data_dir(device):
     device.run_ssh('mount')
     device.run_ssh('ls -la /data/')
     device.run_ssh('ls -la /data/paperless')
-
-
-def test_ca_cert(device, app_domain):
-    device.run_ssh('curl -v https://{0} 2>&1 > {1}/ssl.ca.log'.format(app_domain, TMP_DIR))
 
 
 def test_storage_change_event(device):
