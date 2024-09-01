@@ -78,7 +78,7 @@ def __log_data_dir(device):
 
 
 def test_ca_cert(device, app_domain):
-    device.run_ssh('curl -v https://{0} 2>&1 > {1}/ssl.ca.log'.format(TMP_DIR, app_domain))
+    device.run_ssh('curl -v https://{0} 2>&1 > {1}/ssl.ca.log'.format(app_domain, TMP_DIR))
 
 
 def test_storage_change_event(device):
