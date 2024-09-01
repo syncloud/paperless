@@ -261,7 +261,7 @@ func (i *Installer) UpdateConfigs() error {
 		return err
 	}
 
-	password, err := i.platformClient.RegisterOIDCClient(App, "/accounts/authelia/login/callback/", false, "client_secret_basic")
+	password, err := i.platformClient.RegisterOIDCClient(App, "/accounts/oidc/authelia/login/callback/", false, "client_secret_basic")
 	if err != nil {
 		return err
 	}
