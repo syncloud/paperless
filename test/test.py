@@ -77,6 +77,10 @@ def __log_data_dir(device):
     device.run_ssh('ls -la /data/paperless')
 
 
+def test_ca_cert(device, app_domain):
+    device.run_ssh('curl -v https://{0} 2>&1 > {1}/ssl.ca.log'.format(TMP_DIR))
+
+
 def test_storage_change_event(device):
     device.run_ssh('snap run paperless.storage-change > {0}/storage-change.log'.format(TMP_DIR))
 
