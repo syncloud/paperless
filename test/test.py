@@ -56,10 +56,10 @@ def test_start(module_setup, device, device_host, app, domain):
   
 
 def test_activate_device(device):
+    device.run_ssh('snap refresh platform --channel=master')
     response = retry(device.activate_custom)
     assert response.status_code == 200, response.text
-    device.run_ssh('snap refresh platform --channel=master')
-
+    
 
 def test_ca_cert(device, app_domain):
     device.run_ssh('CURL_CA_BUNDLE=/var/snap/platform/current/syncloud.ca.crt curl -v https://{0} 2>&1 > {1}/ssl.ca.log'.format(app_domain, TMP_DIR))
