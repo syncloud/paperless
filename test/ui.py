@@ -42,34 +42,7 @@ def test_login(selenium, device_user, device_password):
     selenium.find_by(By.ID, "sign-in-button").click()
     selenium.find_by(By.ID, "accept-button").click()
     selenium.find_by(By.XPATH, "//button[contains(.,'Sign up')]").click()
-    selenium.find_by(By.CLASS_NAME, "publish-button-label")
+    selenium.find_by(By.XPATH, "//snap[contains(.,'Welcome to Paperless-ngx')]")
     selenium.screenshot('main')
 
-
-def test_publish_video(selenium):
-    selenium.find_by(By.XPATH, "//input[@type='button' and @value='Remind me later']").click()
-    selenium.find_by(By.XPATH, "//a[contains(.,'Administration')]")
-    selenium.find_by(By.CLASS_NAME, "publish-button-label").click()
-    file = selenium.find_by(By.ID, 'videofile')
-    selenium.driver.execute_script("Object.values(arguments[0].attributes).filter(({name}) => name.startsWith('_ngcontent')).forEach(({name}) => arguments[0].removeAttribute(name))", file)
-    selenium.screenshot('file')
-    file.send_keys(join(DIR, 'videos', 'test.mp4'))
-    name = selenium.find_by(By.ID, "name")
-    name.clear()
-    name.send_keys('test video')
-    selenium.find_by(By.XPATH, "//div[@class='progress-bar' and contains(.,'100%')]")
-
-    name = selenium.find_by(By.ID, "description")
-    name.send_keys('description')
-
-    publish = ".orange-button.action-button"
-    selenium.present_by(By.CSS_SELECTOR, publish)
-    selenium.clickable_by(By.CSS_SELECTOR, publish)
-    # selenium.find_by(By.CSS_SELECTOR, publish).click()
-    # selenium.driver.find_element(By.CSS_SELECTOR, 'body').send_keys(Keys.CONTROL + Keys.END)
-    selenium.driver.execute_script("document.querySelector('.orange-button.action-button').click()")
-    selenium.find_by(By.XPATH, "//h1[contains(.,'test video')]")
-    selenium.find_by(By.XPATH, "//div[contains(.,'The video is being transcoded')]")
-    selenium.find_by(By.XPATH, "//span[contains(.,'Subscribe')]")
-    selenium.screenshot('publish-video')
 
