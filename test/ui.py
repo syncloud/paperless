@@ -42,7 +42,7 @@ def test_login(selenium, device_user, device_password):
     selenium.find_by(By.ID, "sign-in-button").click()
     selenium.find_by(By.ID, "accept-button").click()
     selenium.find_by(By.XPATH, "//button[contains(.,'Sign up')]").click()
-    selenium.find_by(By.XPATH, "//snap[contains(.,'Welcome to Paperless-ngx')]")
+    selenium.find_by(By.XPATH, "//span[contains(.,'Welcome to Paperless-ngx')]")
     selenium.screenshot('main')
 
 
