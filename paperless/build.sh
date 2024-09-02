@@ -25,7 +25,7 @@ ls -la ${BUILD_DIR}/usr/src/paperless/static/guardian/img
 cp --remove-destination -R ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/rest_framework/static/* ${BUILD_DIR}/usr/src/paperless/static
 ls -la ${BUILD_DIR}/usr/src/paperless/static/rest_framework/img
 
-cp --remove-destination -R ${BUILD_DIR}/usr/src/paperless/src/static/* ${BUILD_DIR}/usr/src/paperless/static
+cp --remove-destination -R ${BUILD_DIR}/usr/src/paperless/src/paperless/static/* ${BUILD_DIR}/usr/src/paperless/static
 ls -la ${BUILD_DIR}/usr/src/paperless/static/paperless/img
 
 cp --remove-destination -R ${DIR}/bin ${BUILD_DIR}/sbin
