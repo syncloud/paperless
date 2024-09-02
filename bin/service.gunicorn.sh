@@ -5,5 +5,7 @@ export HOME=$DIR/paperless/usr/src/paperless
 cd $HOME/src
 export PAPERLESS_CONFIGURATION_PATH=$SNAP_DATA/config/paperless.conf
 $DIR/bin/wait-for-configure.sh
-export REQUESTS_CA_BUNDLE=/var/snap/platform/current/syncloud.crt
+if [[ -f /var/snap/platform/current/CI_TEST ]]; then
+  export REQUESTS_CA_BUNDLE=/var/snap/platform/current/syncloud.crt
+fi
 exec $DIR/paperless/sbin/python ${DIR}/paperless/usr/local/bin/gunicorn -c $DIR/paperless/usr/src/paperless/gunicorn.conf.py paperless.asgi:application

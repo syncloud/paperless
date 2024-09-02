@@ -66,7 +66,7 @@ def test_ca_cert(device, app_domain):
 
 
 def test_install(app_archive_path, device_host, device_password, device):
-    device.run_ssh('touch /var/snap/platform/current/NODE_TLS_REJECT_UNAUTHORIZED_0')
+    device.run_ssh('touch /var/snap/platform/current/CI_TEST')
     local_install(device_host, device_password, app_archive_path)
 
 
