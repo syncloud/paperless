@@ -8,4 +8,4 @@ LIBS=$LIBS:$(echo ${DIR}/usr/local/lib)
 #export LD_PRELOAD=$(readlink -f ${DIR}/usr/lib/*-linux-gnu*/libjemalloc.so)
 export MAGICK_CODER_MODULE_PATH=$(echo $USR_LIB/ImageMagick-*/modules-Q*/coders)
 export MAGICK_CONFIGURE_PATH=$(echo $DIR/etc/ImageMagick-*)
-exec ${DIR}/lib*/*-linux*/ld-*.so --library-path $LIBS ${DIR}/usr/bin/convert-im6.q16 "$@"
+exec ${DIR}/lib/*-linux*/ld-*.so* --library-path $LIBS ${DIR}/usr/bin/convert-im6.q16 "$@"
