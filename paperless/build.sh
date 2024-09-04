@@ -29,3 +29,8 @@ cp --remove-destination -R ${BUILD_DIR}/usr/src/paperless/src/paperless/static/*
 ls -la ${BUILD_DIR}/usr/src/paperless/static/paperless/img
 
 cp --remove-destination -R ${DIR}/bin ${BUILD_DIR}/sbin
+
+wget https://github.com/cyberb/paperless-ngx/archive/refs/heads/dev.tar.gz
+tar xf dev.tar.gz
+cp paperless-ngx-dev/src/paperless/adapter.py ${BUILD_DIR}/usr/src/paperless
+cp paperless-ngx-dev/src/paperless/settings.py ${BUILD_DIR}/usr/src/paperless
