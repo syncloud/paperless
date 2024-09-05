@@ -34,5 +34,5 @@ apt update
 apt install -y wget
 wget https://github.com/cyberb/paperless-ngx/archive/refs/heads/dev.tar.gz
 tar xf dev.tar.gz
-cp paperless-ngx-dev/src/paperless/adapter.py ${BUILD_DIR}/usr/src/paperless
-cp paperless-ngx-dev/src/paperless/settings.py ${BUILD_DIR}/usr/src/paperless
+cp paperless-ngx-dev/src/paperless/adapter.py ${BUILD_DIR}/usr/src/paperless/src/paperless
+cp paperless-ngx-dev/src/paperless/settings.py ${BUILD_DIR}/usr/src/paperless/src/paperless
