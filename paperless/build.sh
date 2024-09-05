@@ -40,3 +40,5 @@ cp paperless-ngx-dev/src/paperless/settings.py ${BUILD_DIR}/usr/src/paperless/sr
 sed -i 's#return \["openid", "profile", "email"\]#return \["openid", "profile", "email", "groups"\]#g' ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
 grep profile ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
 
+sed -i 's#username=data.get("preferred_username"),#username=data.get("preferred_username"), groups=data.get("groups"),#g' ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
+grep groups ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
