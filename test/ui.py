@@ -48,6 +48,6 @@ def test_login(selenium, device_user, device_password):
 def test_upload(selenium):
     file = selenium.find_by(By.XPATH, "//input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('class')", file)
-    file.send_keys(join(DIR, '..', 'paperless', 'sample.pdf'))
+    file.send_keys(join(DIR, '..', 'paperless', 'simple.pdf'))
     assert not selenium.exist_by(By.XPATH, "//p[contains(.,'not supported')]")
     selenium.screenshot('uploaded')

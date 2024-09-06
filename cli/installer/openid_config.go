@@ -7,7 +7,8 @@ type Config struct {
 }
 
 type Connect struct {
-	Apps []ConnectApp `json:"APPS"`
+	Apps  []ConnectApp `json:"APPS"`
+	Scope []string     `json:"SCOPE"`
 }
 
 type ConnectApp struct {
@@ -34,6 +35,12 @@ func OpenIDConfig(url, clientID, secret string) (string, error) {
 					ServerURL: url,
 				},
 			}},
+			Scope: []string{
+				"openid",
+				"profile",
+				"email",
+				"groups",
+			},
 		},
 	}
 	b, err := json.Marshal(config)
