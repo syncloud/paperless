@@ -42,3 +42,5 @@ grep profile ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/sociala
 
 sed -i 's#username=data.get("preferred_username"),#username=data.get("preferred_username"), groups=data.get("groups"),#g' ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
 grep groups ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
+
+cp paperless-ngx-dev/src/documents/tests/samples/simple.pdf .
