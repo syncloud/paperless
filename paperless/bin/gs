@@ -4,5 +4,13 @@ LIBS=$(echo ${DIR}/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo ${DIR}/usr/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo ${DIR}/usr/lib)
 LIBS=$LIBS:$(echo ${DIR}/usr/local/lib)
+GS_LIB=$DIR/usr/share/ghostscript/10.03.1/Resource/Init
+GS_LIB="$GS_LIB:$DIR/usr/share/ghostscript/10.03.1/lib"
+GS_LIB="$GS_LIB:$DIR/usr/share/ghostscript/10.03.1/Resource/Font"
+GS_LIB="$GS_LIB:$DIR/usr/share/ghostscript/fonts"
+GS_LIB="$GS_LIB:$DIR/usr/share/cups/fonts"
+GS_LIB="$GS_LIB:$DIR/usr/share/ghostscript/fonts"
+GS_LIB="$GS_LIB:$DIR/usr/local/lib/ghostscript/fonts"
+export GS_LIB="$GS_LIB:$DIR/usr/share/fonts"
 exec ${DIR}/lib/*-linux*/ld-*.so* --library-path $LIBS ${DIR}/usr/bin/gs "$@"
 
