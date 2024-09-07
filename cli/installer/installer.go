@@ -206,6 +206,7 @@ func (i *Installer) StorageChange() error {
 	}
 	err = linux.CreateMissingDirs(
 		path.Join(storageDir, "data/log"),
+		path.Join(storageDir, "data/index"),
 		path.Join(storageDir, "consume"),
 		path.Join(storageDir, "media"),
 		path.Join(storageDir, "static"),
