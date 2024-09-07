@@ -42,7 +42,12 @@ def test_login(selenium, device_user, device_password):
     selenium.find_by(By.ID, "sign-in-button").click()
     selenium.find_by(By.ID, "accept-button").click()
     selenium.find_by(By.XPATH, "//button[contains(.,'Sign up')]").click()
-    selenium.find_by(By.XPATH, "//snap[contains(.,'Welcome to Paperless-ngx')]")
+    selenium.find_by(By.XPATH, "//h4[contains(.,'Paperless-ngx is running!')]")
     selenium.screenshot('main')
 
-
+def test_upload(selenium):
+    file = selenium.find_by(By.XPATH, "//input[@type='file']")
+    selenium.driver.execute_script("arguments[0].removeAttribute('class')", file)
+    file.send_keys(join(DIR, '..', 'paperless', 'simple.pdf'))
+    selenium.find_by(By.XPATH, "//span[contains(.,'Dismiss completed')]")
+    selenium.screenshot('uploaded')

@@ -102,6 +102,11 @@ func (i *Installer) Configure() error {
 		return err
 	}
 
+	err = i.FixPermissions()
+	if err != nil {
+		return err
+	}
+
 	return i.UpdateVersion()
 }
 
@@ -206,6 +211,7 @@ func (i *Installer) StorageChange() error {
 	}
 	err = linux.CreateMissingDirs(
 		path.Join(storageDir, "data/log"),
+		path.Join(storageDir, "data/index"),
 		path.Join(storageDir, "consume"),
 		path.Join(storageDir, "media"),
 		path.Join(storageDir, "static"),
@@ -301,7 +307,12 @@ func (i *Installer) UpdateConfigs() error {
 }
 
 func (i *Installer) FixPermissions() error {
-	err := linux.Chown(DataDir, App)
+	storageDir, err := i.platformClient.InitStorage(App, App)
+	if err != nil {
+		return err
+	}
+
+	err = linux.Chown(DataDir, App)
 	if err != nil {
 		return err
 	}
@@ -309,6 +320,12 @@ func (i *Installer) FixPermissions() error {
 	if err != nil {
 		return err
 	}
+
+	err = linux.Chown(storageDir, App)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
