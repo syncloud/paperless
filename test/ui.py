@@ -49,6 +49,8 @@ def test_upload_pdf(selenium):
     file = selenium.find_by(By.XPATH, "//input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('class')", file)
     file.send_keys(join(DIR, '..', 'paperless', 'simple.pdf'))
+    selenium.find_by(By.XPATH, "//p[contains(.,'Upload complete, waiting...')]")
+    selenium.invisible_by(By.XPATH, "//p[contains(.,'Upload complete, waiting...')]")
     selenium.find_by(By.XPATH, "//span[contains(.,'Dismiss completed')]")
     selenium.screenshot('uploaded-pdf')
 
@@ -56,5 +58,7 @@ def test_upload_jpg(selenium):
     file = selenium.find_by(By.XPATH, "//input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('class')", file)
     file.send_keys(join(DIR, '..', 'paperless', 'simple.jpg'))
+    selenium.find_by(By.XPATH, "//p[contains(.,'Upload complete, waiting...')]")
+    selenium.invisible_by(By.XPATH, "//p[contains(.,'Upload complete, waiting...')]")
     selenium.find_by(By.XPATH, "//span[contains(.,'Dismiss completed')]")
     selenium.screenshot('uploaded-jpg')
