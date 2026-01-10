@@ -25,12 +25,12 @@ local build(arch, test_ui, dind) = [{
   },
   steps: [
     {
-      name: 'version',
-      image: 'debian:buster-slim',
-      commands: [
-        'echo $DRONE_BUILD_NUMBER > version',
-      ],
-    },
+               name: 'version',
+               image: 'debian:' + debian,
+               commands: [
+                 'echo $DRONE_BUILD_NUMBER > version',
+               ],
+             },
              {
                 name: "redis",
                 image: "redis:" + redis,
@@ -40,7 +40,7 @@ local build(arch, test_ui, dind) = [{
             },
              {
                 name: "redis test",
-                image: 'syncloud/platform-buster-' + arch + ':' + platform,
+                image: 'syncloud/platform-' + distro_default + '-' + arch + ':' + platform,
                 commands: [
                     "./redis/test.sh"
                 ]
@@ -55,7 +55,7 @@ local build(arch, test_ui, dind) = [{
         },
         {
             name: "postgresql test",
-            image: 'syncloud/platform-buster-' + arch + ':' + platform,
+            image: 'syncloud/platform-' + distro_default + '-' + arch + ':' + platform,
             commands: [
                 "./postgresql/test.sh"
             ]
@@ -70,23 +70,24 @@ local build(arch, test_ui, dind) = [{
     },
     {
       name: 'paperless test',
-      image: 'syncloud/platform-buster-' + arch + ':' + platform,
+      image: 'syncloud/platform-' + distro_default + '-' + arch + ':' + platform,
       commands: [
         './paperless/test.sh',
       ],
     },
-    {
-      name: 'cli',
-      image: 'golang:1.20',
-      commands: [
-        'cd cli',
-        "go build -ldflags '-linkmode external -extldflags -static' -o ../build/snap/meta/hooks/install ./cmd/install",
-        "go build -ldflags '-linkmode external -extldflags -static' -o ../build/snap/meta/hooks/configure ./cmd/configure",
-        "go build -ldflags '-linkmode external -extldflags -static' -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh",
-        "go build -ldflags '-linkmode external -extldflags -static' -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh",
-        "go build -ldflags '-linkmode external -extldflags -static' -o ../build/snap/bin/cli ./cmd/cli",
-      ],
-    },
+    
+             {
+               name: 'cli',
+               image: 'golang:' + go,
+               commands: [
+                 'cd cli',
+                 'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/install ./cmd/install',
+                 'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/configure ./cmd/configure',
+                 'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh',
+                 'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh',
+                 'CGO_ENABLED=0 go build -o ../build/snap/bin/cli ./cmd/cli',
+               ],
+             },
       {
                name: 'package',
                image: 'debian:' + debian,
@@ -322,4 +323,3 @@ local build(arch, test_ui, dind) = [{
 
 build('amd64', true, '20.10.21-dind') +
 build('arm64', false, '20.10.21-dind')
-
