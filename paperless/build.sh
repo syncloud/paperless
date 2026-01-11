@@ -4,6 +4,9 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 BUILD_DIR=${DIR}/../build/snap/paperless
 mkdir -p ${BUILD_DIR}
+apt update
+apt install -y wget tesseract-ocr-all
+
 cp -r /bin ${BUILD_DIR}
 cp -r /usr ${BUILD_DIR}
 cp -r /lib ${BUILD_DIR}
@@ -30,8 +33,6 @@ ls -la ${BUILD_DIR}/usr/src/paperless/static/paperless/img
 
 cp --remove-destination -R ${DIR}/bin ${BUILD_DIR}/sbin
 
-apt update
-apt install -y wget
 wget https://github.com/cyberb/paperless-ngx/archive/refs/heads/dev.tar.gz
 tar xf dev.tar.gz
 cp paperless-ngx-dev/src/paperless/adapter.py ${BUILD_DIR}/usr/src/paperless/src/paperless
@@ -43,4 +44,4 @@ cp paperless-ngx-dev/src/paperless/settings.py ${BUILD_DIR}/usr/src/paperless/sr
 #sed -i 's#username=data.get("preferred_username"),#username=data.get("preferred_username"), groups=data.get("groups"),#g' ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
 #grep groups ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
 
-cp paperless-ngx-dev/src/documents/tests/samples/simple.pdf .
+cp -r paperless-ngx-dev/src/documents/tests/samples/* .
