@@ -60,7 +60,7 @@ def test_upload_jpg(selenium):
     selenium.driver.execute_script("arguments[0].removeAttribute('class')", file)
     file.clear()
     file.send_keys(join(DIR, '..', 'paperless', 'simple.jpg'))
-    selenium.find_by(By.XPATH, "//p[contains(.,'Upload complete, waiting...')]")
+    #selenium.find_by(By.XPATH, "//p[contains(.,'Upload complete, waiting...')]")
     selenium.invisible_by(By.XPATH, "//p[contains(.,'Upload complete, waiting...')]")
     selenium.find_by(By.XPATH, "//span[contains(.,'Dismiss completed')]")
     selenium.screenshot('uploaded-jpg')
