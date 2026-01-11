@@ -5,8 +5,7 @@ cd ${DIR}
 BUILD_DIR=${DIR}/../build/snap/paperless
 mkdir -p ${BUILD_DIR}
 apt update
-apt install -y wget
-apt inatall tesseract-ocr-all
+apt install -y wget tesseract-ocr-all
 
 cp -r /bin ${BUILD_DIR}
 cp -r /usr ${BUILD_DIR}
@@ -46,4 +45,3 @@ cp paperless-ngx-dev/src/paperless/settings.py ${BUILD_DIR}/usr/src/paperless/sr
 #grep groups ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
 
 cp -r paperless-ngx-dev/src/documents/tests/samples/* .
-
