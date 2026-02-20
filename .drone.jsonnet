@@ -1,6 +1,6 @@
 local name = 'paperless';
 local browser = 'chrome';
-local version = '2.11.6';
+local version = '2.20.7';
 local postgresql = "15-bullseye";
 local redis = "7.0.15";
 local node = "18-bookworm-slim";
