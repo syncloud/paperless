@@ -53,7 +53,7 @@ LIBS=$(echo $SNAP/paperless/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo $SNAP/paperless/usr/lib/*-linux-gnu*)
 LIBS=$LIBS:$SNAP/paperless/usr/local/lib
 
-ldd $BUILD_DIR/usr/bin/convert-im6.q16
-patchelf --set-interpreter $LD $BUILD_DIR/usr/bin/convert-im6.q16
-patchelf --set-rpath $LIBS $BUILD_DIR/usr/bin/convert-im6.q16
+ldd $BUILD_DIR/usr/bin/convert-im7.q16
+patchelf --set-interpreter $LD $BUILD_DIR/usr/bin/convert-im7.q16
+patchelf --set-rpath $LIBS $BUILD_DIR/usr/bin/convert-im7.q16
 $SNAP/paperless/sbin/convert --version
