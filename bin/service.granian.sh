@@ -9,5 +9,4 @@ $DIR/bin/wait-for-configure.sh
 if [[ -f /var/snap/platform/current/CI_TEST ]]; then
   export REQUESTS_CA_BUNDLE=/var/snap/platform/current/syncloud.ca.crt
 fi
-exec $DIR/paperless/sbin/python ${DIR}/paperless/usr/local/bin/gunicorn -c $DIR/paperless/usr/src/paperless/gunicorn.conf.py paperless.asgi:application
-
+exec $DIR/paperless/usr/local/bin/granian --uds $SNAP_COMMON/web.socket --interface asginl --ws --loop uvloop paperless.asgi:application

@@ -1,7 +1,7 @@
 apps:
-  gunicorn:
+  granian:
     user: paperless
-    command: bin/service.gunicorn.sh
+    command: bin/service.granian.sh
     daemon: simple
     plugs:
     - network
