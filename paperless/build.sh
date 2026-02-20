@@ -5,7 +5,7 @@ cd ${DIR}
 BUILD_DIR=${DIR}/../build/snap/paperless
 mkdir -p ${BUILD_DIR}
 apt update
-apt install -y wget tesseract-ocr-all
+apt install -y wget tesseract-ocr-all patchelf
 
 cp -r /bin ${BUILD_DIR}
 cp -r /usr ${BUILD_DIR}
@@ -42,3 +42,17 @@ cp paperless-ngx-dev/src/paperless/settings.py ${BUILD_DIR}/usr/src/paperless/sr
 #grep groups ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
 
 cp -r paperless-ngx-dev/src/documents/tests/samples/* .
+
+SNAP=/snap/paperless/current
+mkdir -p $SNAP
+ln -s $BUILD_DIR $SNAP/paperless
+
+LD=$(echo $SNAP/paperless/lib/*/ld-*.so*)
+LIBS=$(echo $SNAP/paperless/lib/*-linux-gnu*)
+LIBS=$LIBS:$(echo $SNAP/paperless/usr/lib/*-linux-gnu*)
+LIBS=$LIBS:$SNAP/paperless/usr/local/lib
+
+ldd $BUILD_DIR/usr/bin/convert-im6.q16
+patchelf --set-interpreter $LD $BUILD_DIR/usr/bin/convert-im6.q16
+patchelf --set-rpath $LIBS $BUILD_DIR/usr/bin/convert-im6.q16
+$SNAP/paperless/sbin/convert --version
