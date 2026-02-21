@@ -15,7 +15,7 @@ local distro_default = 'bookworm';
 local distros = ['bookworm'];
 
 
-local build(arch, test_ui, dind) = [{
+local build(arch, test_ui) = [{
   kind: 'pipeline',
   type: 'docker',
   name: arch,
@@ -81,11 +81,11 @@ local build(arch, test_ui, dind) = [{
                image: 'golang:' + go,
                commands: [
                  'cd cli',
-                 'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/install ./cmd/install',
-                 'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/configure ./cmd/configure',
-                 'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh',
-                 'CGO_ENABLED=0 go build -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh',
-                 'CGO_ENABLED=0 go build -o ../build/snap/bin/cli ./cmd/cli',
+                 'CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/install ./cmd/install',
+                 'CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/configure ./cmd/configure',
+                 'CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/pre-refresh ./cmd/pre-refresh',
+                 'CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/meta/hooks/post-refresh ./cmd/post-refresh',
+                 'CGO_ENABLED=0 go build -buildvcs=false -o ../build/snap/bin/cli ./cmd/cli',
                ],
              },
       {
@@ -264,18 +264,6 @@ local build(arch, test_ui, dind) = [{
     },
     services: [
       {
-        name: 'docker',
-        image: 'docker:' + dind,
-        privileged: true,
-        volumes: [
-          {
-            name: 'dockersock',
-            path: '/var/run',
-          },
-        ],
-      },
-    ] + [
-      {
         name: name + '.' + distro + '.com',
         image: 'syncloud/platform-' + distro + '-' + arch + ':' + platform,
         privileged: true,
@@ -313,13 +301,9 @@ local build(arch, test_ui, dind) = [{
         name: 'videos',
         temp: {},
       },
-      {
-        name: 'dockersock',
-        temp: {},
-      },
     ],
   },
 ];
 
-build('amd64', true, '20.10.21-dind') +
-build('arm64', false, '20.10.21-dind')
+build('amd64', true) +
+build('arm64', false)

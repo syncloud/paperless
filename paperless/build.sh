@@ -30,19 +30,29 @@ ls -la ${BUILD_DIR}/usr/src/paperless/static/paperless/img
 
 cp --remove-destination -R ${DIR}/bin ${BUILD_DIR}/sbin
 
-cd ${DIR}/../build
-wget https://github.com/cyberb/paperless-ngx/archive/refs/heads/dev.tar.gz
-tar xf dev.tar.gz
-cp paperless-ngx-dev/src/paperless/adapter.py ${BUILD_DIR}/usr/src/paperless/src/paperless
-cp paperless-ngx-dev/src/paperless/settings.py ${BUILD_DIR}/usr/src/paperless/src/paperless
+# Apply Syncloud customisations to upstream files
+PAPERLESS_SRC=${BUILD_DIR}/usr/src/paperless/src/paperless
 
-#sed -i 's#return \["openid", "profile", "email"\]#return \["openid", "profile", "email", "groups"\]#g' ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
-#grep profile ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
+cp ${DIR}/adapter.py ${PAPERLESS_SRC}/adapter.py
 
-#sed -i 's#username=data.get("preferred_username"),#username=data.get("preferred_username"), groups=data.get("groups"),#g' ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
-#grep groups ${BUILD_DIR}/usr/local/lib/python3.11/site-packages/allauth/socialaccount/providers/openid_connect/provider.py
+cat >> ${PAPERLESS_SRC}/settings.py << 'EOF'
 
-cp -r paperless-ngx-dev/src/documents/tests/samples ${DIR}/../build
+###############################################################################
+# Syncloud customisations                                                     #
+###############################################################################
+import re
+
+SOCIALACCOUNT_ADMIN_GROUP = os.getenv("PAPERLESS_SOCIALACCOUNT_ADMIN_GROUP", "admin")
+SOCIALACCOUNT_ADMIN_GROUP_SCOPE = os.getenv("SOCIALACCOUNT_ADMIN_GROUP_SCOPE", "groups")
+
+FILENAME_PARSE_TRANSFORMS = []
+for t in json.loads(os.getenv("PAPERLESS_FILENAME_PARSE_TRANSFORMS", "[]")):
+    FILENAME_PARSE_TRANSFORMS.append((re.compile(t["pattern"]), t["repl"]))
+EOF
+
+mkdir -p ${DIR}/../build/samples
+wget https://github.com/paperless-ngx/paperless-ngx/raw/v2.20.7/src/documents/tests/samples/simple.pdf -O ${DIR}/../build/samples/simple.pdf
+wget https://github.com/paperless-ngx/paperless-ngx/raw/v2.20.7/src/documents/tests/samples/simple.jpg -O ${DIR}/../build/samples/simple.jpg
 
 SNAP=/snap/paperless/current
 mkdir -p $SNAP
