@@ -5,3 +5,4 @@ version
 artifact
 __pycache__
 package.name
+*.snap
