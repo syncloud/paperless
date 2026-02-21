@@ -2,3 +2,6 @@
 build
 version
 *.log
+artifact
+__pycache__
+package.name
