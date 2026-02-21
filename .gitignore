@@ -1,2 +1,4 @@
 .drone.yml
 build
+version
+*.log
