@@ -86,8 +86,11 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         global default permissions are implemented in the future.
         """
         user = super().populate_user(request, sociallogin, data)
-        groups = sociallogin.account.extra_data.get(settings.SOCIALACCOUNT_ADMIN_GROUP_SCOPE)
+        extra_data = sociallogin.account.extra_data
+        # In allauth >= 65.11, OIDC extra_data is nested under 'userinfo' or 'id_token'
+        user_data = extra_data.get("userinfo") or extra_data.get("id_token") or extra_data
+        groups = user_data.get(settings.SOCIALACCOUNT_ADMIN_GROUP_SCOPE)
         if groups:
             if settings.SOCIALACCOUNT_ADMIN_GROUP in groups:
                 user.is_superuser = True
-        return user  # pragma: no cover
+        return user
