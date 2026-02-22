@@ -24,6 +24,12 @@ PAPERLESS_SRC=${BUILD_DIR}/usr/src/paperless/src/paperless
 
 cp ${DIR}/adapter.py ${PAPERLESS_SRC}/adapter.py
 
+# Patch login.html: don't redirect to signup on first install when regular login
+# is disabled (OIDC mode), as the regular signup page will show "Sign Up Closed".
+TEMPLATES_DIR=${BUILD_DIR}/usr/src/paperless/src/documents/templates
+sed -i 's/{% if FIRST_INSTALL %}/{% if FIRST_INSTALL and not DISABLE_REGULAR_LOGIN %}/' \
+    ${TEMPLATES_DIR}/account/login.html
+
 cat >> ${PAPERLESS_SRC}/settings.py << 'EOF'
 
 ###############################################################################
