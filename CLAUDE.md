@@ -7,6 +7,12 @@ CI is Drone CI (JS SPA). Check builds via API:
 curl -s "http://ci.syncloud.org:8080/api/repos/syncloud/paperless/builds?limit=5"
 ```
 
+## Checking which step failed
+
+```
+curl -s "http://ci.syncloud.org:8080/api/repos/syncloud/paperless/builds/{build}" | python3 -c "import json,sys; b=json.load(sys.stdin); [print(f'{s[\"name\"]}: {s[\"status\"]}') for s in b.get('stages',[]) for s in s.get('steps',[])]"
+```
+
 ## CI Artifacts
 
 Artifacts are served at `http://ci.syncloud.org:8081` (nginx file browser SPA).
