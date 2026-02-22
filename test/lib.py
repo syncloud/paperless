@@ -18,6 +18,7 @@ def login(selenium, device_user, device_password):
 
 
 def login_existing_user(selenium, device_user, device_password):
+    selenium.driver.delete_all_cookies()
     selenium.open_app()
     selenium.find_by(By.ID, "username-textfield").send_keys(device_user)
     password = selenium.find_by(By.ID, "password-textfield")
