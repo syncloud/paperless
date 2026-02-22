@@ -10,6 +10,11 @@ apt install -y wget tesseract-ocr-all patchelf
 cp -r /bin ${BUILD_DIR}
 cp -r /usr ${BUILD_DIR}
 cp -r /lib ${BUILD_DIR}
+
+# collectstatic --link creates absolute symlinks that break inside the snap.
+# Re-copy the static directory dereferencing all symlinks to get real files.
+rm -rf ${BUILD_DIR}/usr/src/paperless/static
+cp -rL /usr/src/paperless/static ${BUILD_DIR}/usr/src/paperless/static
 ls -la ${BUILD_DIR}/usr/src/paperless/static
 
 cp --remove-destination -R ${DIR}/bin ${BUILD_DIR}/sbin
