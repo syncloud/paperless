@@ -41,6 +41,10 @@ def test_upload_pre_upgrade(selenium):
     lib.upload_document(selenium, 'pre')
 
 
+def test_check_pre_upgrade_data(selenium):
+    lib.check_document_list(selenium, 'pre-check')
+
+
 def test_upgrade(device_host, device_password, app_archive_path, app_domain):
     local_install(device_host, device_password, app_archive_path)
     wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 100)
@@ -50,7 +54,7 @@ def test_login_post_upgrade(selenium, device_user, device_password):
     lib.login_existing_user(selenium, device_user, device_password)
 
 
-def test_check_pre_upgrade_data(selenium):
+def test_check_post_upgrade_data(selenium):
     lib.check_document_list(selenium, 'post-check')
 
 

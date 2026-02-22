@@ -31,6 +31,7 @@ def login_existing_user(selenium, device_user, device_password):
 
 
 def upload_document(selenium, mode):
+    selenium.open_app()
     file = selenium.find_by(By.XPATH, "//input[@type='file']")
     selenium.driver.execute_script("arguments[0].removeAttribute('class')", file)
     file.clear()
