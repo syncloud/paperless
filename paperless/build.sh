@@ -10,23 +10,7 @@ apt install -y wget tesseract-ocr-all patchelf
 cp -r /bin ${BUILD_DIR}
 cp -r /usr ${BUILD_DIR}
 cp -r /lib ${BUILD_DIR}
-cp --remove-destination -R ${BUILD_DIR}/usr/src/paperless/src/documents/static/* ${BUILD_DIR}/usr/src/paperless/static
 ls -la ${BUILD_DIR}/usr/src/paperless/static
-
-cp --remove-destination -R ${BUILD_DIR}/usr/local/lib/python3.12/site-packages/django/contrib/admin/static/* ${BUILD_DIR}/usr/src/paperless/static
-ls -la ${BUILD_DIR}/usr/src/paperless/static/admin/css
-
-cp --remove-destination -R ${BUILD_DIR}/usr/local/lib/python3.12/site-packages/django_extensions/static/* ${BUILD_DIR}/usr/src/paperless/static
-ls -la ${BUILD_DIR}/usr/src/paperless/static/django_extensions/css
-
-cp --remove-destination -R ${BUILD_DIR}/usr/local/lib/python3.12/site-packages/guardian/static/* ${BUILD_DIR}/usr/src/paperless/static
-ls -la ${BUILD_DIR}/usr/src/paperless/static/guardian/img
-
-cp --remove-destination -R ${BUILD_DIR}/usr/local/lib/python3.12/site-packages/rest_framework/static/* ${BUILD_DIR}/usr/src/paperless/static
-ls -la ${BUILD_DIR}/usr/src/paperless/static/rest_framework/img
-
-cp --remove-destination -R ${BUILD_DIR}/usr/src/paperless/src/paperless/static/* ${BUILD_DIR}/usr/src/paperless/static
-ls -la ${BUILD_DIR}/usr/src/paperless/static/paperless/img
 
 cp --remove-destination -R ${DIR}/bin ${BUILD_DIR}/sbin
 

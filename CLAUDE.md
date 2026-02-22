@@ -7,6 +7,39 @@ CI is Drone CI (JS SPA). Check builds via API:
 curl -s "http://ci.syncloud.org:8080/api/repos/syncloud/paperless/builds?limit=5"
 ```
 
+## CI Artifacts
+
+Artifacts are served at `http://ci.syncloud.org:8081` (nginx file browser SPA).
+Browse via API with `curl -s "http://ci.syncloud.org:8081/files/paperless/{build}-{arch}/"`.
+
+Example for build 128, amd64:
+```
+curl -s "http://ci.syncloud.org:8081/files/paperless/128-amd64/bookworm/log/"
+```
+
+Directory structure:
+```
+{build}-{arch}/
+  paperless_{build}_{arch}.snap
+  bookworm/
+    log/
+      journalctl.log     # systemd journal from the test run
+      ps.log             # process list at time of failure
+      netstat.log        # open ports at time of failure
+      top.log            # CPU/memory usage
+      config.ls.log      # /var/snap/paperless/current/config listing
+      var.snap.*.log     # snap directory listings
+      data.ls.log        # /data/paperless listing
+      hosts.log          # /etc/hosts
+      ssl.ca.log         # curl SSL test output
+      authelia.config.log
+```
+
+Download a file directly:
+```
+curl -O "http://ci.syncloud.org:8081/files/paperless/128-amd64/bookworm/log/journalctl.log"
+```
+
 # Running tests locally
 
 Use the provided shell script (run from project root):
