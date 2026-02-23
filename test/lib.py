@@ -42,6 +42,6 @@ def upload_document(selenium, mode):
 
 
 def check_document_list(selenium, mode):
-    selenium.find_by(By.XPATH, "//a[contains(@href, '/documents')]").click()
+    selenium.find_by(By.XPATH, "//a[@href='/documents']").click()
     selenium.find_by(By.XPATH, "//pngx-document-card")
     selenium.screenshot('documents-{0}'.format(mode))
