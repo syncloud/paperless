@@ -65,5 +65,5 @@ def upload_document_2_20(selenium, mode):
 
 def check_document_list_2_20(selenium, mode):
     selenium.find_by(By.XPATH, "//a[@href='/documents']").click()
-    selenium.find_by(By.XPATH, "//pngx-document-card-large")
+    selenium.find_by(By.XPATH, "//pngx-document-card-small")
     selenium.screenshot('documents-{0}'.format(mode))
