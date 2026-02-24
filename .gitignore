@@ -1,1 +1,8 @@
-.idea
+.drone.yml
+build
+version
+*.log
+artifact
+__pycache__
+package.name
+*.snap
