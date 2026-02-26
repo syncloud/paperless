@@ -7,6 +7,7 @@ apps:
     - network
     - network-bind
     restart-condition: always
+    restart-delay: 10s
   consumer:
     user: paperless
     command: bin/service.consumer.sh
@@ -15,6 +16,7 @@ apps:
     - network
     - network-bind
     restart-condition: always
+    restart-delay: 10s
   celery:
     user: paperless
     command: bin/service.celery.sh
@@ -23,6 +25,7 @@ apps:
     - network
     - network-bind
     restart-condition: always
+    restart-delay: 10s
   celery-beat:
     user: paperless
     command: bin/service.celery-beat.sh
@@ -31,6 +34,7 @@ apps:
     - network
     - network-bind
     restart-condition: always
+    restart-delay: 10s
   postgresql:
     user: paperless
     command: bin/service.postgresql.sh
@@ -39,11 +43,13 @@ apps:
       - network
       - network-bind
     restart-condition: always
+    restart-delay: 10s
   redis:
     user: paperless
     daemon: simple
     command: bin/service.redis.sh
     restart-condition: always
+    restart-delay: 10s
     before: [celery]
  
   psql:
