@@ -82,6 +82,22 @@ def __log_data_dir(device):
     device.run_ssh('ls -la /data/paperless')
 
 
+def test_consume_pdf(device, app_dir):
+    device.scp_to_device(join(app_dir, 'build', 'samples', 'simple.pdf'), '/data/paperless/consume/simple.pdf')
+    retry(lambda: __check_consumed(device, 'simple'), retries=30)
+
+
+def test_consume_jpg(device, app_dir):
+    device.scp_to_device(join(app_dir, 'build', 'samples', 'simple.jpg'), '/data/paperless/consume/simple.jpg')
+    retry(lambda: __check_consumed(device, 'simple', expected=2), retries=30)
+
+
+def __check_consumed(device, name, expected=1):
+    result = device.run_ssh("snap run paperless.psql -U paperless -d paperless -t -c \"SELECT count(*) FROM documents_document WHERE title LIKE '%{0}%'\"".format(name))
+    count = int(result.strip())
+    assert count >= expected, 'expected at least {0} documents, got {1}'.format(expected, count)
+
+
 def test_storage_change_event(device):
     device.run_ssh('snap run paperless.storage-change > {0}/storage-change.log'.format(TMP_DIR))
 
