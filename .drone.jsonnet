@@ -12,7 +12,7 @@ local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud
 local python = '3.12-slim-bookworm';
 local go = '1.25';
 local distro_default = 'bookworm';
-local distros = ['bookworm'];
+local distros = ['bookworm', 'buster'];
 
 
 local build(arch, test_ui) = [{
