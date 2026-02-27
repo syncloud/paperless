@@ -83,12 +83,14 @@ def __log_data_dir(device):
 
 
 def test_consume_pdf(device, app_dir):
-    device.scp_to_device(join(app_dir, 'build', 'samples', 'simple.pdf'), '/data/paperless/consume/simple.pdf')
+    device.scp_to_device(join(app_dir, 'build', 'samples', 'simple.pdf'), '/tmp/simple.pdf')
+    device.run_ssh('cp /tmp/simple.pdf /data/paperless/consume/')
     retry(lambda: __check_consumed(device, 'simple'), retries=30)
 
 
 def test_consume_jpg(device, app_dir):
-    device.scp_to_device(join(app_dir, 'build', 'samples', 'simple.jpg'), '/data/paperless/consume/simple.jpg')
+    device.scp_to_device(join(app_dir, 'build', 'samples', 'simple.jpg'), '/tmp/simple.jpg')
+    device.run_ssh('cp /tmp/simple.jpg /data/paperless/consume/')
     retry(lambda: __check_consumed(device, 'simple', expected=2), retries=30)
 
 
