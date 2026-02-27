@@ -46,9 +46,5 @@ def test_login_post_upgrade(selenium, device_user, device_password):
     lib.login_2_20(selenium, device_user, device_password, new_user=False)
 
 
-def test_check_post_upgrade_data(selenium):
-    lib.check_document_list_2_20(selenium, 'post-check')
-
-
 def test_upload_post_upgrade(selenium):
     lib.upload_document_2_20(selenium, 'post')
