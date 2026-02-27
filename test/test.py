@@ -1,5 +1,5 @@
 import os
-from os.path import join
+from os.path import dirname, join
 from subprocess import check_output
 import json
 
@@ -11,6 +11,7 @@ from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.installer import local_install
 import time
 
+DIR = dirname(__file__)
 TMP_DIR = '/tmp/syncloud'
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -82,14 +83,14 @@ def __log_data_dir(device):
     device.run_ssh('ls -la /data/paperless')
 
 
-def test_consume_pdf(device, app_dir):
-    device.scp_to_device(join(app_dir, 'build', 'samples', 'simple.pdf'), '/tmp/simple.pdf')
+def test_consume_pdf(device):
+    device.scp_to_device(join(DIR, '..', 'build', 'samples', 'simple.pdf'), '/tmp/simple.pdf')
     device.run_ssh('cp /tmp/simple.pdf /data/paperless/consume/')
     retry(lambda: __check_consumed(device, 'simple'), retries=30)
 
 
-def test_consume_jpg(device, app_dir):
-    device.scp_to_device(join(app_dir, 'build', 'samples', 'simple.jpg'), '/tmp/simple.jpg')
+def test_consume_jpg(device):
+    device.scp_to_device(join(DIR, '..', 'build', 'samples', 'simple.jpg'), '/tmp/simple.jpg')
     device.run_ssh('cp /tmp/simple.jpg /data/paperless/consume/')
     retry(lambda: __check_consumed(device, 'simple', expected=2), retries=30)
 
