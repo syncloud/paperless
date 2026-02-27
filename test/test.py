@@ -86,20 +86,19 @@ def __log_data_dir(device):
 def test_consume_pdf(device):
     device.scp_to_device(join(DIR, '..', 'build', 'samples', 'simple.pdf'), '/tmp/simple.pdf')
     device.run_ssh('cp /tmp/simple.pdf /data/paperless/consume/')
-    retry(lambda: __check_consumed(device, 'simple'), retries=30)
+    retry(lambda: __check_consumed(device, 'simple.pdf'), retries=30)
 
 
 def test_consume_jpg(device):
     device.scp_to_device(join(DIR, '..', 'build', 'samples', 'simple.jpg'), '/tmp/simple.jpg')
     device.run_ssh('cp /tmp/simple.jpg /data/paperless/consume/')
-    retry(lambda: __check_consumed(device, 'simple', expected=2), retries=30)
+    retry(lambda: __check_consumed(device, 'simple.jpg'), retries=30)
 
 
-def __check_consumed(device, name, expected=1):
-    result = device.run_ssh("ls /data/paperless/media/documents/originals/", throw=False)
+def __check_consumed(device, name):
+    result = device.run_ssh("ls /data/paperless/consume/", throw=False)
     files = [f for f in result.splitlines() if name in f]
-    count = len(files)
-    assert count >= expected, 'expected at least {0} documents, got {1}'.format(expected, count)
+    assert len(files) == 0, 'file still in consume dir: {0}'.format(files)
 
 
 def test_storage_change_event(device):
