@@ -93,7 +93,7 @@ def test_consume_jpg(device, app_dir):
 
 
 def __check_consumed(device, name, expected=1):
-    result = device.run_ssh("ls /data/paperless/media/documents/originals/ | grep {0} | wc -l".format(name))
+    result = device.run_ssh("find /data/paperless/media/documents/originals/ -name '*{0}*' 2>/dev/null | wc -l".format(name))
     count = int(result.strip())
     assert count >= expected, 'expected at least {0} documents, got {1}'.format(expected, count)
 
