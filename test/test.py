@@ -1,5 +1,5 @@
 import os
-from os.path import join
+from os.path import dirname, join
 from subprocess import check_output
 import json
 
@@ -11,6 +11,7 @@ from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.installer import local_install
 import time
 
+DIR = dirname(__file__)
 TMP_DIR = '/tmp/syncloud'
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -56,7 +57,6 @@ def test_start(module_setup, device, device_host, app, domain):
   
 
 def test_activate_device(device):
-    device.run_ssh('snap refresh platform --channel=master')
     device.run_ssh('snap set system refresh.hold=$(date -d "+90 days" -u +%Y-%m-%dT%H:%M:%SZ)')
     response = retry(device.activate_custom)
     assert response.status_code == 200, response.text
@@ -80,6 +80,24 @@ def __log_data_dir(device):
     device.run_ssh('mount')
     device.run_ssh('ls -la /data/')
     device.run_ssh('ls -la /data/paperless')
+
+
+def test_consume_pdf(device):
+    device.scp_to_device(join(DIR, '..', 'build', 'samples', 'simple.pdf'), '/tmp/simple.pdf')
+    device.run_ssh('cp /tmp/simple.pdf /data/paperless/consume/')
+    retry(lambda: __check_consumed(device, 'simple.pdf'), retries=30)
+
+
+def test_consume_jpg(device):
+    device.scp_to_device(join(DIR, '..', 'build', 'samples', 'simple.jpg'), '/tmp/simple.jpg')
+    device.run_ssh('cp /tmp/simple.jpg /data/paperless/consume/')
+    retry(lambda: __check_consumed(device, 'simple.jpg'), retries=30)
+
+
+def __check_consumed(device, name):
+    result = device.run_ssh("ls /data/paperless/consume/", throw=False)
+    files = [f for f in result.splitlines() if name in f]
+    assert len(files) == 0, 'file still in consume dir: {0}'.format(files)
 
 
 def test_storage_change_event(device):

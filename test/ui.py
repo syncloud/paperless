@@ -46,3 +46,11 @@ def test_upload_jpg(selenium):
     selenium.invisible_by(By.XPATH, "//p[contains(.,'Upload complete, waiting...')]")
     selenium.find_by(By.XPATH, "//span[contains(.,'Dismiss completed')]")
     selenium.screenshot('uploaded-jpg')
+
+
+def test_check_pdf(selenium):
+    lib.check_document_list_2_20(selenium, 'pdf')
+
+
+def test_check_jpg(selenium):
+    lib.check_document_list_2_20(selenium, 'jpg')
