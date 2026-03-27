@@ -54,3 +54,20 @@ def test_check_pdf(selenium):
 
 def test_check_jpg(selenium):
     lib.check_document_list_2_20(selenium, 'jpg')
+
+
+def test_regular_user_login(device, selenium, app, domain, device_host):
+    device.run_ssh('snap run platform.cli user add regularuser --password=regularpass123')
+    selenium.driver.delete_all_cookies()
+    selenium.open_app()
+    selenium.find_by(By.ID, "username-textfield").send_keys("regularuser")
+    selenium.find_by(By.ID, "password-textfield").send_keys("regularpass123")
+    selenium.find_by(By.ID, "sign-in-button").click()
+    selenium.find_by(By.ID, "accept-button").click()
+    selenium.find_by(By.XPATH, "//button[contains(.,'Sign up')]").click()
+    selenium.find_by(By.XPATH, "//h4[contains(.,'Paperless-ngx is running!')]")
+    selenium.screenshot('regular-user-main')
+    # Verify regular user can access documents (requires permissions)
+    selenium.find_by(By.XPATH, "//a[@href='/documents']").click()
+    selenium.find_by(By.XPATH, "//pngx-document-list")
+    selenium.screenshot('regular-user-documents')
