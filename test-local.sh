@@ -26,7 +26,7 @@ docker run -d \
   --privileged \
   -v /var/run/dbus:/var/run/dbus \
   -v /dev:/dev \
-  syncloud/platform-bookworm-amd64:25.09
+  syncloud/platform-bookworm-amd64:26.03.1
 
 # Run all build steps (none require the platform service)
 drone exec --pipeline amd64 --trusted \
