@@ -58,6 +58,7 @@ def test_start(module_setup, device, device_host, app, domain):
 
 def test_activate_device(device):
     device.run_ssh('snap set system refresh.hold=$(date -d "+90 days" -u +%Y-%m-%dT%H:%M:%SZ)')
+    device.run_ssh('rm -f /var/snap/platform/current/syncloud.crt', throw=False)
     response = retry(device.activate_custom)
     assert response.status_code == 200, response.text
     
