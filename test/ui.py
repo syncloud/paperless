@@ -63,7 +63,6 @@ def test_regular_user_login(device, selenium, app, domain, device_host):
     selenium.find_by(By.ID, "username-textfield").send_keys("regularuser")
     selenium.find_by(By.ID, "password-textfield").send_keys("regularpass123")
     selenium.find_by(By.ID, "sign-in-button").click()
-    selenium.find_by(By.ID, "accept-button").click()
     selenium.screenshot('regular-user-signup-form')
     username = selenium.find_by(By.ID, "id_username")
     username.clear()
