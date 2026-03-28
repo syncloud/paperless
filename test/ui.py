@@ -57,6 +57,7 @@ def test_check_jpg(selenium):
 
 
 def test_regular_user_login(device, selenium, app, domain, device_host):
+    device.activated()
     device.run_ssh('snap run platform.cli user add regularuser --password=regularpass123')
     selenium.driver.delete_all_cookies()
     selenium.open_app()
