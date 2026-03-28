@@ -5,7 +5,7 @@ from allauth.account.adapter import DefaultAccountAdapter
 from allauth.core import context
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.conf import settings
-from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.models import Group, User
 from django.forms import ValidationError
 from django.urls import reverse
 
@@ -130,37 +130,4 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             )
             user.groups.add(*groups)
             user.save()
-        if not user.is_superuser:
-            _assign_default_permissions(user)
         return user
-
-
-def _assign_default_permissions(user):
-    """
-    Grant minimum document permissions to non-superuser OIDC users so they
-    can view and manage documents without admin intervention.
-    """
-    default_perms = Permission.objects.filter(
-        content_type__app_label="documents",
-        codename__in=[
-            "view_document",
-            "add_document",
-            "change_document",
-            "delete_document",
-            "view_tag",
-            "add_tag",
-            "view_correspondent",
-            "add_correspondent",
-            "view_documenttype",
-            "add_documenttype",
-            "view_savedview",
-            "add_savedview",
-            "change_savedview",
-            "delete_savedview",
-            "view_uisettings",
-            "add_uisettings",
-            "change_uisettings",
-        ],
-    )
-    user.user_permissions.add(*default_perms)
-    logger.debug(f"Assigned default document permissions to user `{user}`")
