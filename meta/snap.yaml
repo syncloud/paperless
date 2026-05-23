@@ -74,7 +74,7 @@ apps:
     command: bin/cli restore-post-start
 
 confinement: strict
-description: Paperless
+description: Scan, index and archive all your physical documents
 grade: stable
 name: paperless
-summary: paperless
+summary: Paperless-ngx
