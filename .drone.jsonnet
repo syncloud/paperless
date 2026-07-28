@@ -9,7 +9,7 @@ local debian = 'bookworm-slim';
 local platform = '26.03.1';
 local platform_buster = '25.02';
 local selenium = '4.35.0-20250828';
-local deployer = 'https://github.com/syncloud/store/releases/download/4/syncloud-release';
+local store_publisher = 'stable-346';
 local python = '3.12-slim-bookworm';
 local go = '1.25';
 local distro_default = 'bookworm';
@@ -184,53 +184,14 @@ local build(arch, test_ui) = [{
               },
             ] else []) + [
       {
-        name: 'upload',
-        image: 'debian:' + debian,
+        name: 'publish',
+        image: 'syncloud/store-publisher:' + store_publisher,
         environment: {
-          AWS_ACCESS_KEY_ID: {
-            from_secret: 'AWS_ACCESS_KEY_ID',
-          },
-          AWS_SECRET_ACCESS_KEY: {
-            from_secret: 'AWS_SECRET_ACCESS_KEY',
-          },
-          SYNCLOUD_TOKEN: {
-            from_secret: 'SYNCLOUD_TOKEN',
-          },
+          SYNCLOUD_TOKEN: { from_secret: 'SYNCLOUD_TOKEN' },
         },
-        commands: [
-          'PACKAGE=$(cat package.name)',
-          'apt update && apt install -y wget',
-          'wget ' + deployer + '-' + arch + ' -O release --progress=dot:giga',
-          'chmod +x release',
-          './release publish -f $PACKAGE -b $DRONE_BRANCH',
-        ],
+        command: ['snap', '-c', '${DRONE_BRANCH}'],
         when: {
-          branch: ['stable', 'master'],
-          event: ['push'],
-        },
-      },
-      {
-        name: 'promote',
-        image: 'debian:' + debian,
-        environment: {
-          AWS_ACCESS_KEY_ID: {
-            from_secret: 'AWS_ACCESS_KEY_ID',
-          },
-          AWS_SECRET_ACCESS_KEY: {
-            from_secret: 'AWS_SECRET_ACCESS_KEY',
-          },
-          SYNCLOUD_TOKEN: {
-            from_secret: 'SYNCLOUD_TOKEN',
-          },
-        },
-        commands: [
-          'apt update && apt install -y wget',
-          'wget ' + deployer + '-' + arch + ' -O release --progress=dot:giga',
-          'chmod +x release',
-          './release promote -n ' + name + ' -a $(dpkg --print-architecture)',
-        ],
-        when: {
-          branch: ['stable'],
+          branch: ['master', 'stable'],
           event: ['push'],
         },
       },
