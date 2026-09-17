@@ -23,7 +23,7 @@ def module_setup(request, device, artifact_dir):
 
 def psql(device, sql):
     return device.run_ssh(
-        'snap run paperless.psql -U paperless -d paperless -t -A -c "{0}"'.format(sql))
+        "snap run paperless.psql -U paperless -d paperless -t -A -c '{0}'".format(sql))
 
 
 def document_count(device):
@@ -31,8 +31,13 @@ def document_count(device):
 
 
 def applied_migrations(device):
-    out = psql(device, "select name from django_migrations where app = 'documents'")
-    return set(line.strip() for line in out.split('\n') if line.strip())
+    out = psql(device, 'select app, name from django_migrations')
+    applied = set()
+    for line in out.split('\n'):
+        parts = line.strip().split('|')
+        if len(parts) == 2 and parts[0] == 'documents':
+            applied.add(parts[1])
+    return applied
 
 
 def test_start(module_setup, app, device_host, domain, device):
