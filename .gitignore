@@ -1,8 +1,14 @@
 .drone.yml
+.idea
+*.iml
+venv
 build
 version
 *.log
 artifact
 __pycache__
+*.pyc
 package.name
 *.snap
+node_modules/
+test-results/

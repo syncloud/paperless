@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
-apt-get update
-apt-get install -y sshpass openssh-client
-pip install -r requirements.txt
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+${DIR}/../ci/apt.sh sshpass openssh-client
+pip install -r ${DIR}/requirements.txt

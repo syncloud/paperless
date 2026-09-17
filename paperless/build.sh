@@ -2,10 +2,16 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
+
+if [[ -z "$1" ]]; then
+    echo "usage $0 version"
+    exit 1
+fi
+
+VERSION=$1
 BUILD_DIR=${DIR}/../build/snap/paperless
 mkdir -p ${BUILD_DIR}
-apt update
-apt install -y wget tesseract-ocr-all patchelf
+${DIR}/../ci/apt.sh wget tesseract-ocr-all patchelf
 
 cp -r /bin ${BUILD_DIR}
 cp -r /usr ${BUILD_DIR}
@@ -46,8 +52,9 @@ for t in json.loads(os.getenv("PAPERLESS_FILENAME_PARSE_TRANSFORMS", "[]")):
 EOF
 
 mkdir -p ${DIR}/../build/samples
-wget https://github.com/paperless-ngx/paperless-ngx/raw/v2.20.7/src/documents/tests/samples/simple.pdf -O ${DIR}/../build/samples/simple.pdf
-wget https://github.com/paperless-ngx/paperless-ngx/raw/v2.20.7/src/documents/tests/samples/simple.jpg -O ${DIR}/../build/samples/simple.jpg
+SAMPLES=https://github.com/paperless-ngx/paperless-ngx/raw/v${VERSION}/src/documents/tests/samples
+${DIR}/../ci/download.sh ${SAMPLES}/simple.pdf ${DIR}/../build/samples/simple.pdf
+${DIR}/../ci/download.sh ${SAMPLES}/simple.jpg ${DIR}/../build/samples/simple.jpg
 
 SNAP=/snap/paperless/current
 mkdir -p $SNAP
