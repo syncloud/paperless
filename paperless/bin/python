@@ -9,4 +9,9 @@ LIBS=$LIBS:$(echo ${DIR}/usr/local/lib)
 export MAGICK_HOME=${DIR}/ImageMagick
 export MAGICK_CODER_MODULE_PATH=$(echo ${DIR}/usr/lib/*-linux*/ImageMagick-*/modules-*)
 export MAGIC=${DIR}/usr/lib/file/magic.mgc
-exec ${DIR}/lib/*-linux*/ld-*.so* --library-path $LIBS ${DIR}/usr/local/bin/python3 "$@"
+LD=$(ls ${DIR}/lib/*-linux*/ld-linux-*.so.* ${DIR}/lib/*-linux*/ld-[0-9]*.so 2>/dev/null | head -1)
+if [ -z "${LD}" ]; then
+    echo "no glibc loader found under ${DIR}/lib/*-linux*/" >&2
+    exit 1
+fi
+exec "${LD}" --library-path $LIBS ${DIR}/usr/local/bin/python3 "$@"
