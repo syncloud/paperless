@@ -27,7 +27,12 @@ def psql(device, sql):
 
 
 def document_count(device):
-    return int(psql(device, 'select count(*) from documents_document').strip())
+    out = psql(device, 'select count(*) from documents_document')
+    for line in reversed(out.strip().split('\n')):
+        line = line.strip()
+        if line.isdigit():
+            return int(line)
+    raise AssertionError('no row count in psql output: {0}'.format(out))
 
 
 def applied_migrations(device):
