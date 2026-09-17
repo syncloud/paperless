@@ -60,7 +60,11 @@ SNAP=/snap/paperless/current
 mkdir -p $SNAP
 ln -s $BUILD_DIR $SNAP/paperless
 
-LD=$(echo $SNAP/paperless/lib/*/ld-*.so*)
+LD=$(ls $SNAP/paperless/lib/*/ld-linux-*.so.* $SNAP/paperless/lib/*/ld-[0-9]*.so 2>/dev/null | head -1)
+if [ -z "${LD}" ]; then
+    echo "no glibc loader found under $SNAP/paperless/lib/*/" >&2
+    exit 1
+fi
 LIBS=$(echo $SNAP/paperless/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo $SNAP/paperless/usr/lib/*-linux-gnu*)
 LIBS=$LIBS:$SNAP/paperless/usr/local/lib
