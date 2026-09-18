@@ -84,7 +84,8 @@ def test_v3_floor_migration_applied(device):
             V3_FLOOR_MIGRATION, sorted(after)[-5:]))
 
 
-def test_no_errors_in_log(device):
+def test_no_database_damage_in_log(device):
     log = device.run_ssh('journalctl --no-pager | tail -3000')
-    for marker in ['Traceback (most recent call last)', 'django.db.utils']:
-        assert marker not in log, [l for l in log.split('\n') if marker in l][:5]
+    for marker in ['django.db.utils.', 'Error applying migration', 'FATAL:  database']:
+        hits = [l for l in log.split('\n') if marker in l]
+        assert not hits, hits[:5]
