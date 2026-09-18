@@ -61,3 +61,11 @@ ldd $BUILD_DIR/usr/bin/convert-im7.q16
 patchelf --set-interpreter $LD $BUILD_DIR/usr/bin/convert-im7.q16
 patchelf --set-rpath $LIBS $BUILD_DIR/usr/bin/convert-im7.q16
 $SNAP/paperless/sbin/convert --version
+
+# granian spawns its workers by re-executing sys.executable, which skips the
+# sbin/python wrapper and so loses its --library-path. The interpreter has to
+# find the bundled glibc on its own: paperless 3.x is built on trixie and needs
+# a newer one than the platform base provides.
+patchelf --set-interpreter $LD $BUILD_DIR/usr/local/bin/python3
+patchelf --set-rpath $LIBS $BUILD_DIR/usr/local/bin/python3
+$SNAP/paperless/usr/local/bin/python3 --version

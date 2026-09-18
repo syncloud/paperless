@@ -10,7 +10,8 @@ mkdir -p $SNAP
 ln -s $BUILD_DIR $SNAP/paperless
 
 $BUILD_DIR/sbin/python --version
-$BUILD_DIR/sbin/python -c "from psycopg import pq; assert pq.__impl__ == 'binary', pq.__impl__; print('psycopg pq impl:', pq.__impl__)"
+$SNAP/paperless/usr/local/bin/python3 --version
+$SNAP/paperless/usr/local/bin/python3 -c "from psycopg import pq; assert pq.__impl__ == 'binary', pq.__impl__; print('psycopg pq impl:', pq.__impl__)"
 $BUILD_DIR/sbin/python ${BUILD_DIR}/usr/local/bin/celery --version
 $BUILD_DIR/sbin/python ${BUILD_DIR}/usr/local/bin/granian --version
 $BUILD_DIR/sbin/tesseract --list-langs | grep eng
