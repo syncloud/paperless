@@ -13,6 +13,13 @@ BUILD_DIR=${DIR}/../build/snap/paperless
 mkdir -p ${BUILD_DIR}
 ${DIR}/../ci/apt.sh wget tesseract-ocr-all patchelf
 
+# psycopg resolves libpq through ctypes.util.find_library, which shells out to
+# ldconfig and so reads the host's libraries rather than the ones inside the
+# snap. psycopg-binary carries its own libpq and needs no lookup at all.
+PSYCOPG_VERSION=$(python3 -c "import importlib.metadata as m; print(m.version('psycopg'))")
+uv pip install --no-cache --system --no-python-downloads --python-preference system \
+    psycopg-binary==${PSYCOPG_VERSION}
+
 cp -r /bin ${BUILD_DIR}
 cp -r /usr ${BUILD_DIR}
 cp -r /lib ${BUILD_DIR}
