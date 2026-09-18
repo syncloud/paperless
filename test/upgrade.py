@@ -7,6 +7,7 @@ from syncloudlib.http import wait_for_rest
 
 TMP_DIR = '/tmp/syncloud'
 V3_FLOOR_MIGRATION = '1075_workflowaction_order'
+V3_SQUASHED_MIGRATIONS = ['0001_squashed', '0002_squashed']
 BEFORE = {}
 
 
@@ -70,18 +71,19 @@ def test_documents_survived(device):
     assert after == BEFORE['documents'], (BEFORE['documents'], after)
 
 
-def test_migrations_only_moved_forward(device):
-    after = applied_migrations(device)
-    lost = BEFORE['migrations'] - after
-    assert not lost, 'migrations disappeared across the upgrade: {0}'.format(sorted(lost))
+def test_v3_precondition_met_before_upgrade():
+    assert V3_FLOOR_MIGRATION in BEFORE['migrations'], (
+        'v3 refuses to start unless {0} is applied. The store version must already '
+        'carry it for a one step upgrade to be legal. Applied tail: {1}'.format(
+            V3_FLOOR_MIGRATION, sorted(BEFORE['migrations'])[-5:]))
 
 
-def test_v3_floor_migration_applied(device):
+def test_v3_squash_applied(device):
     after = applied_migrations(device)
-    assert V3_FLOOR_MIGRATION in after, (
-        'paperless-ngx v3 refuses to start unless {0} is applied; this release exists to '
-        'establish that floor. Applied tail: {1}'.format(
-            V3_FLOOR_MIGRATION, sorted(after)[-5:]))
+    squashed = [m for m in V3_SQUASHED_MIGRATIONS if m in after]
+    assert squashed, (
+        'no v3 squashed migration recorded, so the database never reached the v3 '
+        'schema. Applied tail: {0}'.format(sorted(after)[-5:]))
 
 
 def test_services_running_after_upgrade(device):

@@ -1,5 +1,5 @@
 local name = 'paperless';
-local version = '2.20.15';
+local version = '3.1.3';
 
 local go = '1.25';
 local nginx = '1.29.3-alpine3.22';

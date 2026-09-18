@@ -2,6 +2,8 @@ package installer
 
 import "encoding/json"
 
+const TokenAuthMethod = "client_secret_basic"
+
 type Config struct {
 	Connect Connect `json:"openid_connect"`
 }
@@ -20,7 +22,8 @@ type ConnectApp struct {
 }
 
 type Settings struct {
-	ServerURL string `json:"server_url"`
+	ServerURL       string `json:"server_url"`
+	TokenAuthMethod string `json:"token_auth_method"`
 }
 
 func OpenIDConfig(url, clientID, secret string) (string, error) {
@@ -32,7 +35,8 @@ func OpenIDConfig(url, clientID, secret string) (string, error) {
 				ClientID:   clientID,
 				Secret:     secret,
 				Settings: Settings{
-					ServerURL: url,
+					ServerURL:       url,
+					TokenAuthMethod: TokenAuthMethod,
 				},
 			}},
 			Scope: []string{
