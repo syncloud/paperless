@@ -5,6 +5,13 @@ cd ${DIR}
 
 BUILD_DIR=${DIR}/../build/snap/postgresql
 cd ${BUILD_DIR}
+
 PGBIN=$(echo usr/lib/postgresql/*/bin)
-ldd $PGBIN/initdb || true
-./bin/initdb.sh --help
+
+./bin/initdb.sh --version
+./bin/psql.sh --version
+./bin/pg_ctl.sh --version
+./bin/pg_dumpall.sh --version
+
+${PGBIN}/postgres -V
+${PGBIN}/pg_dump --version

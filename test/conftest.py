@@ -7,8 +7,3 @@ DIR = dirname(__file__)
 @pytest.fixture(scope="session")
 def project_dir():
     return join(DIR, '..')
-
-
-@pytest.fixture(scope="session")
-def selenium_timeout():
-    return 60
