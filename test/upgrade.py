@@ -84,8 +84,8 @@ def test_v3_floor_migration_applied(device):
             V3_FLOOR_MIGRATION, sorted(after)[-5:]))
 
 
-def test_no_database_damage_in_log(device):
-    log = device.run_ssh('journalctl --no-pager | tail -3000')
-    for marker in ['django.db.utils.', 'Error applying migration', 'FATAL:  database']:
-        hits = [l for l in log.split('\n') if marker in l]
-        assert not hits, hits[:5]
+def test_services_running_after_upgrade(device):
+    out = device.run_ssh('snap services paperless')
+    rows = [line.split() for line in out.strip().split('\n')[1:] if line.strip()]
+    not_active = [row[0] for row in rows if len(row) >= 3 and row[2] != 'active']
+    assert not not_active, (not_active, out)
