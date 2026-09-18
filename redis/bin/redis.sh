@@ -4,9 +4,4 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
 LIBS=$(ls -d ${DIR}/lib/*-linux-gnu* 2>/dev/null | paste -sd: -)
 LD=$(ls ${DIR}/lib/*-linux*/ld-linux-*.so.* ${DIR}/lib/*-linux*/ld-[0-9]*.so 2>/dev/null | head -1)
 
-if [ -z "${LD}" ]; then
-    echo "no glibc loader found under ${DIR}/lib/*-linux*/" >&2
-    exit 1
-fi
-
 exec "${LD}" --library-path "${LIBS}" ${DIR}/usr/local/bin/redis-server "$@"
