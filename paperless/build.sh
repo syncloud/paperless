@@ -25,36 +25,12 @@ ls -la ${BUILD_DIR}/usr/src/paperless/static
 
 cp --remove-destination -R ${DIR}/bin ${BUILD_DIR}/sbin
 
-# Apply Syncloud customisations to upstream files
-PAPERLESS_SRC=${BUILD_DIR}/usr/src/paperless/src/paperless
-
-cp ${DIR}/syncloud_adapter.py ${PAPERLESS_SRC}/syncloud_adapter.py
-
 # Patch login.html: don't redirect to signup on first install when regular login
 # is disabled (OIDC mode), as the regular signup page will show "Sign Up Closed".
 TEMPLATES_DIR=${BUILD_DIR}/usr/src/paperless/src/documents/templates
 sed -i 's/{% if FIRST_INSTALL %}/{% if FIRST_INSTALL and not DISABLE_REGULAR_LOGIN %}/' \
     ${TEMPLATES_DIR}/account/login.html
 
-SETTINGS=${PAPERLESS_SRC}/settings/__init__.py
-test -f ${SETTINGS}
-
-cat >> ${SETTINGS} << 'EOF'
-
-###############################################################################
-# Syncloud customisations                                                     #
-###############################################################################
-import re
-
-SOCIALACCOUNT_ADAPTER = "paperless.syncloud_adapter.SyncloudSocialAccountAdapter"
-
-SOCIALACCOUNT_ADMIN_GROUP = os.getenv("PAPERLESS_SOCIALACCOUNT_ADMIN_GROUP", "admin")
-SOCIALACCOUNT_ADMIN_GROUP_SCOPE = os.getenv("SOCIALACCOUNT_ADMIN_GROUP_SCOPE", "groups")
-
-FILENAME_PARSE_TRANSFORMS = []
-for t in json.loads(os.getenv("PAPERLESS_FILENAME_PARSE_TRANSFORMS", "[]")):
-    FILENAME_PARSE_TRANSFORMS.append((re.compile(t["pattern"]), t["repl"]))
-EOF
 
 mkdir -p ${DIR}/../build/samples
 SAMPLES=https://github.com/paperless-ngx/paperless-ngx/raw/v${VERSION}/src/documents/tests/samples
