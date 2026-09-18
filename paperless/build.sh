@@ -66,6 +66,12 @@ $SNAP/paperless/sbin/convert --version
 # sbin/python wrapper and so loses its --library-path. The interpreter has to
 # find the bundled glibc on its own: paperless 3.x is built on trixie and needs
 # a newer one than the platform base provides.
+# --force-rpath writes DT_RPATH rather than DT_RUNPATH. RUNPATH applies only to
+# an object's own direct dependencies, and libm here is pulled in by libpython,
+# not by the interpreter, so a RUNPATH on the interpreter never gets consulted.
 patchelf --set-interpreter $LD $BUILD_DIR/usr/local/bin/python3
-patchelf --set-rpath $LIBS $BUILD_DIR/usr/local/bin/python3
+patchelf --force-rpath --set-rpath $LIBS $BUILD_DIR/usr/local/bin/python3
+for lib in $BUILD_DIR/usr/local/lib/libpython*.so*; do
+    patchelf --force-rpath --set-rpath $LIBS $lib
+done
 $SNAP/paperless/usr/local/bin/python3 --version
