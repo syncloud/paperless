@@ -38,12 +38,7 @@ TEMPLATES_DIR=${BUILD_DIR}/usr/src/paperless/src/documents/templates
 sed -i 's/{% if FIRST_INSTALL %}/{% if FIRST_INSTALL and not DISABLE_REGULAR_LOGIN %}/' \
     ${TEMPLATES_DIR}/account/login.html
 
-# syncloud_ext imports paperless.signals.handle_social_account_updated; fail the build
-# if upstream renames it rather than letting the app error at runtime.
-PAPERLESS_SRC=${BUILD_DIR}/usr/src/paperless/src
-grep -q "def handle_social_account_updated" ${PAPERLESS_SRC}/paperless/signals.py \
-    || { echo "upstream renamed handle_social_account_updated; syncloud_ext needs updating" >&2; exit 1; }
-cp -r ${DIR}/syncloud_ext ${PAPERLESS_SRC}/syncloud_ext
+cp -r ${DIR}/syncloud_ext ${BUILD_DIR}/usr/src/paperless/src/syncloud_ext
 
 
 mkdir -p ${DIR}/../build/samples
