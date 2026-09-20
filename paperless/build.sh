@@ -38,6 +38,8 @@ TEMPLATES_DIR=${BUILD_DIR}/usr/src/paperless/src/documents/templates
 sed -i 's/{% if FIRST_INSTALL %}/{% if FIRST_INSTALL and not DISABLE_REGULAR_LOGIN %}/' \
     ${TEMPLATES_DIR}/account/login.html
 
+cp -r ${DIR}/syncloud_ext ${BUILD_DIR}/usr/src/paperless/src/syncloud_ext
+
 
 mkdir -p ${DIR}/../build/samples
 SAMPLES=https://github.com/paperless-ngx/paperless-ngx/raw/v${VERSION}/src/documents/tests/samples
