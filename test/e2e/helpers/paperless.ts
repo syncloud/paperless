@@ -67,6 +67,16 @@ export async function uploadDocument(page: Page, file: string) {
   }
 }
 
+export async function expectSuperuser(page: Page) {
+  const res = await page.request.get('/api/ui_settings/')
+  const body = await res.json().catch(() => ({}))
+  const user = body.user ?? {}
+  if (!user.is_superuser) {
+    console.log(`[not-superuser] ui_settings user=${JSON.stringify(user)}`)
+    throw new Error(`sso user is not a superuser: is_superuser=${user.is_superuser} is_staff=${user.is_staff}`)
+  }
+}
+
 export async function openDocuments(page: Page) {
   await page.locator('a[href="/documents"]').first().click()
 }
