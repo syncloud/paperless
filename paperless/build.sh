@@ -38,22 +38,12 @@ TEMPLATES_DIR=${BUILD_DIR}/usr/src/paperless/src/documents/templates
 sed -i 's/{% if FIRST_INSTALL %}/{% if FIRST_INSTALL and not DISABLE_REGULAR_LOGIN %}/' \
     ${TEMPLATES_DIR}/account/login.html
 
-# Upstream connects handle_social_account_updated only to social_account_updated,
-# which fires on later logins, not the first. Connect social_account_added too so a
-# member of the superuser group is granted admin on their first sso login instead of
-# their second.
-APPS_PY=${BUILD_DIR}/usr/src/paperless/src/paperless/apps.py
-python3 - "$APPS_PY" <<'PYEOF'
-import sys, io
-path = sys.argv[1]
-src = open(path).read()
-anchor = "        social_account_updated.connect(handle_social_account_updated)\n"
-add = "        from allauth.socialaccount.signals import social_account_added\n" \
-      "        social_account_added.connect(handle_social_account_updated)\n"
-assert anchor in src, "social_account_updated.connect anchor not found in apps.py"
-assert "social_account_added" not in src, "social_account_added already wired upstream"
-open(path, "w").write(src.replace(anchor, anchor + add, 1))
-PYEOF
+# syncloud_ext imports paperless.signals.handle_social_account_updated; fail the build
+# if upstream renames it rather than letting the app error at runtime.
+PAPERLESS_SRC=${BUILD_DIR}/usr/src/paperless/src
+grep -q "def handle_social_account_updated" ${PAPERLESS_SRC}/paperless/signals.py \
+    || { echo "upstream renamed handle_social_account_updated; syncloud_ext needs updating" >&2; exit 1; }
+cp -r ${DIR}/syncloud_ext ${PAPERLESS_SRC}/syncloud_ext
 
 
 mkdir -p ${DIR}/../build/samples
