@@ -84,6 +84,26 @@ def __log_data_dir(device):
     device.run_ssh('ls -la /data/paperless')
 
 
+def __run_in_app(device, script):
+    device.scp_to_device(join(DIR, script), '/tmp/{0}'.format(script))
+    return device.run_ssh(
+        'cd /snap/paperless/current/paperless/usr/src/paperless/src && '
+        'HOME=/snap/paperless/current/paperless/usr/src/paperless '
+        'PAPERLESS_CONFIGURATION_PATH=/var/snap/paperless/current/config/paperless.conf '
+        '/snap/paperless/current/paperless/sbin/python manage.py shell < /tmp/{0}'.format(script),
+        throw=False)
+
+
+def test_classifier_nltk(device):
+    output = __run_in_app(device, 'classifier_nltk.py')
+    assert 'quick brown fox jump lazi dog' in output, output
+
+
+def test_thumbnail_font(device):
+    output = __run_in_app(device, 'thumbnail_font.py')
+    assert 'thumbnail bytes' in output, output
+
+
 def test_consume_pdf(device):
     device.scp_to_device(join(DIR, '..', 'build', 'samples', 'simple.pdf'), '/tmp/simple.pdf')
     device.run_ssh('cp /tmp/simple.pdf /data/paperless/consume/')
@@ -96,21 +116,15 @@ def test_consume_jpg(device):
     retry(lambda: __check_consumed(device, 'simple.jpg'), retries=30)
 
 
+def test_consume_txt(device):
+    device.run_ssh("printf 'syncloud consume text check' > /data/paperless/consume/simple.txt")
+    retry(lambda: __check_consumed(device, 'simple.txt'), retries=30)
+
+
 def __check_consumed(device, name):
     result = device.run_ssh("ls /data/paperless/consume/", throw=False)
     files = [f for f in result.splitlines() if name in f]
     assert len(files) == 0, 'file still in consume dir: {0}'.format(files)
-
-
-def test_classifier_nltk(device):
-    device.scp_to_device(join(DIR, 'classifier_nltk.py'), '/tmp/classifier_nltk.py')
-    output = device.run_ssh(
-        'cd /snap/paperless/current/paperless/usr/src/paperless/src && '
-        'HOME=/snap/paperless/current/paperless/usr/src/paperless '
-        'PAPERLESS_CONFIGURATION_PATH=/var/snap/paperless/current/config/paperless.conf '
-        '/snap/paperless/current/paperless/sbin/python manage.py shell < /tmp/classifier_nltk.py',
-        throw=False)
-    assert 'quick brown fox jump lazi dog' in output, output
 
 
 def test_storage_change_event(device):

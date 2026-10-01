@@ -31,3 +31,11 @@ stopwords.ensure_loaded()
 assert 'the' in stopwords.words('english')
 print(SnowballStemmer('english').stem(word_tokenize('jumping', language='english')[0]))
 "
+
+FONT=$SNAP/paperless/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf
+test -f $FONT
+$BUILD_DIR/sbin/python -c "
+from PIL import ImageFont
+font = ImageFont.truetype(font='$FONT', size=20, layout_engine=ImageFont.Layout.BASIC)
+print(font.getname())
+"
