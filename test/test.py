@@ -102,6 +102,17 @@ def __check_consumed(device, name):
     assert len(files) == 0, 'file still in consume dir: {0}'.format(files)
 
 
+def test_classifier_nltk(device):
+    device.scp_to_device(join(DIR, 'classifier_nltk.py'), '/tmp/classifier_nltk.py')
+    output = device.run_ssh(
+        'cd /snap/paperless/current/paperless/usr/src/paperless/src && '
+        'HOME=/snap/paperless/current/paperless/usr/src/paperless '
+        'PAPERLESS_CONFIGURATION_PATH=/var/snap/paperless/current/config/paperless.conf '
+        '/snap/paperless/current/paperless/sbin/python manage.py shell < /tmp/classifier_nltk.py',
+        throw=False)
+    assert 'quick brown fox jump lazi dog' in output, output
+
+
 def test_storage_change_event(device):
     device.run_ssh('snap run paperless.storage-change > {0}/storage-change.log'.format(TMP_DIR))
 

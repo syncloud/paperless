@@ -20,3 +20,14 @@ $BUILD_DIR/sbin/gs --version
 $BUILD_DIR/sbin/gpg --version
 $BUILD_DIR/sbin/pdftotext -v
 $BUILD_DIR/sbin/unpaper --version
+
+$BUILD_DIR/sbin/python -c "
+import nltk
+nltk.data.path = ['$SNAP/paperless/usr/share/nltk_data']
+from nltk.corpus import stopwords
+from nltk.stem import SnowballStemmer
+from nltk.tokenize import word_tokenize
+stopwords.ensure_loaded()
+assert 'the' in stopwords.words('english')
+print(SnowballStemmer('english').stem(word_tokenize('jumping', language='english')[0]))
+"
