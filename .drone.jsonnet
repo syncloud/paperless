@@ -1,14 +1,13 @@
 local name = 'paperless';
-local version = '3.1.3';
+local version = '3.4.2';
 
 local go = '1.25';
-local nginx = '1.29.3-alpine3.22';
 local postgresql = '15-bookworm';
 local redis = '7.0.15';
 local debian = 'bookworm-slim';
 local python = '3.12-slim-bookworm';
-local platform = '26.09.02';
-local playwright = 'mcr.microsoft.com/playwright:v1.48.2-jammy';
+local platform = '26.10.02';
+local playwright = 'mcr.microsoft.com/playwright:v1.59.1-jammy';
 local store_publisher = 'stable-346';
 local distro_default = 'bookworm';
 local distros = ['bookworm', 'buster'];
@@ -95,7 +94,7 @@ local build(arch, test_ui) = [{
          {
            name: 'e2e',
            image: playwright,
-           commands: ['./test/e2e/run.sh e2e specs/01-smoke.spec.ts'],
+           commands: ['./test/e2e/run.sh specs/01-smoke.spec.ts'],
          },
          {
            name: 'test-upgrade-prev',
@@ -105,7 +104,7 @@ local build(arch, test_ui) = [{
          {
            name: 'e2e-before-upgrade',
            image: playwright,
-           commands: ['./test/e2e/run.sh e2e-before-upgrade specs/02-pre-upgrade.spec.ts'],
+           commands: ['./test/e2e/run.sh specs/02-pre-upgrade.spec.ts'],
          },
          {
            name: 'test-upgrade',
@@ -115,7 +114,7 @@ local build(arch, test_ui) = [{
          {
            name: 'e2e-after-upgrade',
            image: playwright,
-           commands: ['./test/e2e/run.sh e2e-after-upgrade specs/03-post-upgrade.spec.ts'],
+           commands: ['./test/e2e/run.sh specs/03-post-upgrade.spec.ts'],
          },
        ] else []) + [
     {

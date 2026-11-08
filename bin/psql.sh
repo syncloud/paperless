@@ -7,7 +7,6 @@ if [ -z "$SNAP_COMMON" ]; then
   exit 1
 fi
 
-# shellcheck source=config/env
 . "${SNAP_DATA}/config/env"
 
 if [[ "$(whoami)" == "paperless" ]]; then

@@ -13,36 +13,28 @@ BUILD_DIR=${DIR}/../build/snap/paperless
 mkdir -p ${BUILD_DIR}
 ${DIR}/../ci/apt.sh wget tesseract-ocr-all patchelf
 
-# psycopg resolves libpq through ctypes.util.find_library, which shells out to
-# ldconfig and so reads the host's libraries rather than the ones inside the
-# snap. psycopg-binary carries its own libpq and needs no lookup at all.
 PSYCOPG_VERSION=$(python3 -c "import importlib.metadata as m; print(m.version('psycopg'))")
-uv pip install --no-cache --system --no-python-downloads --python-preference system \
+${DIR}/../ci/retry.sh uv pip install --no-cache --system --no-python-downloads --python-preference system \
     psycopg-binary==${PSYCOPG_VERSION}
 
 cp -r /bin ${BUILD_DIR}
 cp -r /usr ${BUILD_DIR}
 cp -r /lib ${BUILD_DIR}
 
-# collectstatic --link creates absolute symlinks that break inside the snap.
-# Re-copy the static directory dereferencing all symlinks to get real files.
 rm -rf ${BUILD_DIR}/usr/src/paperless/static
 cp -rL /usr/src/paperless/static ${BUILD_DIR}/usr/src/paperless/static
 ls -la ${BUILD_DIR}/usr/src/paperless/static
 
 cp --remove-destination -R ${DIR}/bin ${BUILD_DIR}/sbin
 
-# Patch login.html: don't redirect to signup on first install when regular login
-# is disabled (OIDC mode), as the regular signup page will show "Sign Up Closed".
 TEMPLATES_DIR=${BUILD_DIR}/usr/src/paperless/src/documents/templates
 sed -i 's/{% if FIRST_INSTALL %}/{% if FIRST_INSTALL and not DISABLE_REGULAR_LOGIN %}/' \
     ${TEMPLATES_DIR}/account/login.html
 
-
 mkdir -p ${DIR}/../build/samples
-SAMPLES=https://github.com/paperless-ngx/paperless-ngx/raw/v${VERSION}/src/documents/tests/samples
-${DIR}/../ci/download.sh ${SAMPLES}/simple.pdf ${DIR}/../build/samples/simple.pdf
-${DIR}/../ci/download.sh ${SAMPLES}/simple.jpg ${DIR}/../build/samples/simple.jpg
+UPSTREAM=https://github.com/paperless-ngx/paperless-ngx/raw/v${VERSION}/src
+${DIR}/../ci/download.sh ${UPSTREAM}/paperless_testing/sample_files/simple-digital.pdf ${DIR}/../build/samples/simple.pdf
+${DIR}/../ci/download.sh ${UPSTREAM}/documents/tests/samples/simple.jpg ${DIR}/../build/samples/simple.jpg
 
 SNAP=/snap/paperless/current
 mkdir -p $SNAP
@@ -57,18 +49,6 @@ LIBS=$(echo $SNAP/paperless/lib/*-linux-gnu*)
 LIBS=$LIBS:$(echo $SNAP/paperless/usr/lib/*-linux-gnu*)
 LIBS=$LIBS:$SNAP/paperless/usr/local/lib
 
-ldd $BUILD_DIR/usr/bin/convert-im7.q16
-patchelf --set-interpreter $LD $BUILD_DIR/usr/bin/convert-im7.q16
-patchelf --set-rpath $LIBS $BUILD_DIR/usr/bin/convert-im7.q16
-$SNAP/paperless/sbin/convert --version
-
-# granian spawns its workers by re-executing sys.executable, which skips the
-# sbin/python wrapper and so loses its --library-path. The interpreter has to
-# find the bundled glibc on its own: paperless 3.x is built on trixie and needs
-# a newer one than the platform base provides.
-# --force-rpath writes DT_RPATH rather than DT_RUNPATH. RUNPATH applies only to
-# an object's own direct dependencies, and libm here is pulled in by libpython,
-# not by the interpreter, so a RUNPATH on the interpreter never gets consulted.
 patchelf --set-interpreter $LD $BUILD_DIR/usr/local/bin/python3
 patchelf --force-rpath --set-rpath $LIBS $BUILD_DIR/usr/local/bin/python3
 for lib in $BUILD_DIR/usr/local/lib/libpython*.so*; do

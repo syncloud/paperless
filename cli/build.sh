@@ -5,6 +5,9 @@ BUILD_DIR=${DIR}/../build/snap
 
 cd ${DIR}
 
+${DIR}/../ci/retry.sh go mod download
+CGO_ENABLED=0 go test ./...
+
 mkdir -p ${BUILD_DIR}/meta/hooks ${BUILD_DIR}/bin
 
 for hook in install configure pre-refresh post-refresh; do
