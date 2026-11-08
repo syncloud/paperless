@@ -1,0 +1,9 @@
+#!/bin/bash -e
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
+LIBS=$(echo ${DIR}/lib/*-linux-gnu*)
+LIBS=$LIBS:$(echo ${DIR}/usr/lib/*-linux-gnu*)
+LIBS=$LIBS:$(echo ${DIR}/usr/lib)
+LIBS=$LIBS:$(echo ${DIR}/usr/local/lib)
+LD=$(ls ${DIR}/lib/*-linux*/ld-linux-*.so.* ${DIR}/lib/*-linux*/ld-[0-9]*.so 2>/dev/null | head -1)
+exec "${LD}" --library-path $LIBS ${DIR}/usr/bin/qpdf "$@"
+

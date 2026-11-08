@@ -1,80 +1,57 @@
+name: paperless
+summary: Paperless-ngx
+description: Scan, index and archive all your physical documents
+grade: stable
+
 apps:
   granian:
     user: paperless
     command: bin/service.granian.sh
     daemon: simple
-    plugs:
-    - network
-    - network-bind
     restart-condition: always
     restart-delay: 10s
   consumer:
     user: paperless
     command: bin/service.consumer.sh
     daemon: simple
-    plugs:
-    - network
-    - network-bind
     restart-condition: always
     restart-delay: 10s
   celery:
     user: paperless
     command: bin/service.celery.sh
     daemon: simple
-    plugs:
-    - network
-    - network-bind
     restart-condition: always
     restart-delay: 10s
   celery-beat:
     user: paperless
     command: bin/service.celery-beat.sh
     daemon: simple
-    plugs:
-    - network
-    - network-bind
     restart-condition: always
     restart-delay: 10s
   postgresql:
     user: paperless
     command: bin/service.postgresql.sh
     daemon: forking
-    plugs:
-      - network
-      - network-bind
     restart-condition: always
     restart-delay: 10s
   redis:
     user: paperless
-    daemon: simple
     command: bin/service.redis.sh
+    daemon: simple
     restart-condition: always
     restart-delay: 10s
     before: [celery]
- 
   psql:
     command: bin/psql.sh
-
   pgdumpall:
     command: bin/pg_dumpall.sh
-
   storage-change:
     command: bin/cli storage-change
-
   access-change:
     command: bin/cli access-change
-
   backup-pre-stop:
     command: bin/cli backup-pre-stop
-
   restore-pre-start:
     command: bin/cli restore-pre-start
-
   restore-post-start:
     command: bin/cli restore-post-start
-
-confinement: strict
-description: Scan, index and archive all your physical documents
-grade: stable
-name: paperless
-summary: Paperless-ngx

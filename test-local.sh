@@ -12,13 +12,10 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Clean previous build output and artifacts (Docker runs as root, so use docker to remove)
 docker run --rm -v "$(pwd):/src" alpine sh -c "rm -rf /src/build/* /src/artifact /src/*.snap"
 
-# Generate .drone.yml properly (stderr goes to terminal, not into the file)
 drone jsonnet --stdout --stream > .drone.yml
 
-# Create network and start platform service (drone exec does not start services)
 docker network create "$NETWORK"
 docker run -d \
   --name "$PLATFORM_CONTAINER" \
@@ -26,22 +23,22 @@ docker run -d \
   --privileged \
   -v /var/run/dbus:/var/run/dbus \
   -v /dev:/dev \
-  syncloud/platform-bookworm-amd64:26.03.1
+  --entrypoint /bin/sh \
+  syncloud/platform-bookworm:26.10.02 \
+  -c "mkdir -p /etc/systemd/system/snapd.service.d && printf '[Service]\\nExecStartPost=/bin/sh -c \"/usr/bin/snap set system refresh.hold=2099-01-01T00:00:00Z\"\\n' > /etc/systemd/system/snapd.service.d/disable-refresh.conf && exec /sbin/init"
 
-# Run all build steps (none require the platform service)
 drone exec --pipeline amd64 --trusted \
-  --include version \
   --include redis \
-  --include "redis test" \
+  --include "redis test bookworm" \
   --include postgresql \
-  --include "postgresql test" \
+  --include "postgresql test bookworm" \
   --include paperless \
-  --include "paperless test" \
+  --include "paperless test bookworm" \
   --include cli \
+  --include "cli test bookworm" \
   --include package \
   .drone.yml 2>&1 | tee "$LOG"
 
-# Run test bookworm manually so it can reach the platform service container
 BUILD_NUMBER=$(cat version)
 docker run --rm \
   --network "$NETWORK" \
