@@ -11,6 +11,8 @@ from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.installer import local_install
 import time
 
+import snapd
+
 DIR = dirname(__file__)
 TMP_DIR = '/tmp/syncloud'
 
@@ -43,7 +45,6 @@ def module_setup(request, device, app_dir, artifact_dir):
 
         app_log_dir = join(artifact_dir, 'log')
         os.mkdir(app_log_dir)
-        device.scp_from_device('/var/snap/paperless/common/log/*.log', app_log_dir)
         device.scp_from_device('{0}/*'.format(TMP_DIR), app_log_dir)
         check_output('chmod -R a+r {0}'.format(artifact_dir), shell=True)
 
@@ -54,15 +55,15 @@ def test_start(module_setup, device, device_host, app, domain):
     add_host_alias(app, device_host, domain)
     device.run_ssh('date', retries=100)
     device.run_ssh('mkdir {0}'.format(TMP_DIR))
-  
+    snapd.settle(device)
+
 
 @pytest.mark.flaky(retries=50, delay=10)
 def test_activate_device(device):
-    device.run_ssh('snap set system refresh.hold=$(date -d "+90 days" -u +%Y-%m-%dT%H:%M:%SZ)')
     device.run_ssh('rm -f /var/snap/platform/current/syncloud.crt', throw=False)
     response = retry(device.activate_custom)
     assert response.status_code == 200, response.text
-    
+
 
 def test_ca_cert(device, app_domain):
     device.run_ssh('CURL_CA_BUNDLE=/var/snap/platform/current/syncloud.ca.crt curl -v https://{0} 2>&1 > {1}/ssl.ca.log'.format(app_domain, TMP_DIR))
@@ -75,6 +76,10 @@ def test_install(app_archive_path, device_host, device_password, device):
 
 def test_index(app_domain):
     wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 10)
+
+
+def test_no_restarts_after_install(device, app):
+    snapd.assert_no_restarts(device, app)
 
 
 def __log_data_dir(device):
@@ -94,8 +99,8 @@ def __run_in_app(device, script):
         throw=False)
 
 
-def test_classifier_nltk(device):
-    output = __run_in_app(device, 'classifier_nltk.py')
+def test_classifier_stemming(device):
+    output = __run_in_app(device, 'classifier_stemming.py')
     assert 'quick brown fox jump lazi dog' in output, output
 
 
@@ -114,6 +119,16 @@ def test_consume_jpg(device):
     device.scp_to_device(join(DIR, '..', 'build', 'samples', 'simple.jpg'), '/tmp/simple.jpg')
     device.run_ssh('cp /tmp/simple.jpg /data/paperless/consume/')
     retry(lambda: __check_consumed(device, 'simple.jpg'), retries=30)
+
+
+def test_pdf_thumbnail(device):
+    retry(lambda: __check_thumbnails(device, 2), retries=30)
+
+
+def __check_thumbnails(device, at_least):
+    out = device.run_ssh('ls /data/paperless/media/documents/thumbnails/', throw=False)
+    thumbnails = [f for f in out.split() if f.endswith('.webp')]
+    assert len(thumbnails) >= at_least, out
 
 
 def test_consume_txt(device):
@@ -140,8 +155,13 @@ def test_remove(device, app):
     assert response.status_code == 200, response.text
 
 
-def test_reinstall(app_archive_path, device_host, device_password):
+def test_reinstall(app_archive_path, device_host, device_password, app_domain):
     local_install(device_host, device_password, app_archive_path)
+    wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 10)
+
+
+def test_no_restarts_after_reinstall(device, app):
+    snapd.assert_no_restarts(device, app)
 
 
 def test_upgrade(app_archive_path, device_host, device_password):
@@ -150,6 +170,10 @@ def test_upgrade(app_archive_path, device_host, device_password):
 
 def test_index_after_upgrade(app_domain):
     wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 10)
+
+
+def test_no_restarts_after_upgrade(device, app):
+    snapd.assert_no_restarts(device, app)
 
 
 def test_access_change(device, artifact_dir):
@@ -165,9 +189,6 @@ def test_backup(device, artifact_dir):
     device.run_ssh('tar tvf {0}/{1}'.format(backup['path'], backup['file']))
     device.run_ssh("snap run platform.cli backup restore {0}".format(backup['file']))
 
-
-#def test_sql_plugin(device, artifact_dir):
-#    device.run_ssh("snap run paperless.psql -U paperless -d paperless -c 'select * from plugin'", retries=10)
 
 
 def retry(method, retries=10):

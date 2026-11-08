@@ -1,52 +1,50 @@
 #!/bin/bash
 set -eo pipefail
 
-LOG=test-local.log
-PLATFORM_CONTAINER=paperless.bookworm.com
-NETWORK=paperless-local
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+cd ${DIR}
+
+LOG=${DIR}/test-local.log
+NAME=paperless
+BUILD=${BUILD:-1}
+DISTRO=${DISTRO:-bookworm}
+pin() {
+  sed -n "s/^local $1 = '\(.*\)';/\1/p" .drone.jsonnet
+}
+VERSION=$(pin version)
+PLATFORM=$(pin platform)
+PLATFORM_IMAGE=syncloud/platform-${DISTRO}:${PLATFORM}
+DEVICE=${NAME}.${DISTRO}.com
+NETWORK=${NAME}-local
 
 cleanup() {
-  echo "--- cleanup ---"
-  docker rm -f "$PLATFORM_CONTAINER" 2>/dev/null || true
-  docker network rm "$NETWORK" 2>/dev/null || true
+  docker rm -f ${DEVICE} 2>/dev/null || true
+  docker network rm ${NETWORK} 2>/dev/null || true
 }
 trap cleanup EXIT
 
-# Clean previous build output and artifacts (Docker runs as root, so use docker to remove)
-docker run --rm -v "$(pwd):/src" alpine sh -c "rm -rf /src/build/* /src/artifact /src/*.snap"
+step() {
+  local image=$1
+  shift
+  echo "=== ${image} $*"
+  docker run --rm --entrypoint "" --network ${NETWORK} -e DRONE_BUILD_NUMBER=${BUILD} \
+    -v ${DIR}:/drone/src -w /drone/src ${image} "$@"
+}
 
-# Generate .drone.yml properly (stderr goes to terminal, not into the file)
-drone jsonnet --stdout --stream > .drone.yml
+docker run --rm -v ${DIR}:/src alpine sh -c "rm -rf /src/build /src/artifact /src/*.snap /src/version /src/package.name"
+docker network create ${NETWORK}
+docker run -d --name ${DEVICE} --network ${NETWORK} --privileged \
+  -v /var/run/dbus:/var/run/dbus -v /dev:/dev ${PLATFORM_IMAGE}
 
-# Create network and start platform service (drone exec does not start services)
-docker network create "$NETWORK"
-docker run -d \
-  --name "$PLATFORM_CONTAINER" \
-  --network "$NETWORK" \
-  --privileged \
-  -v /var/run/dbus:/var/run/dbus \
-  -v /dev:/dev \
-  syncloud/platform-bookworm-amd64:26.03.1
-
-# Run all build steps (none require the platform service)
-drone exec --pipeline amd64 --trusted \
-  --include version \
-  --include redis \
-  --include "redis test" \
-  --include postgresql \
-  --include "postgresql test" \
-  --include paperless \
-  --include "paperless test" \
-  --include cli \
-  --include package \
-  .drone.yml 2>&1 | tee "$LOG"
-
-# Run test bookworm manually so it can reach the platform service container
-BUILD_NUMBER=$(cat version)
-docker run --rm \
-  --network "$NETWORK" \
-  -v "$(pwd):/drone/src" \
-  -w /drone/src \
-  python:3.12-slim-bookworm \
-  bash -c "mkdir -p artifact/bookworm && cd test && ./deps.sh && py.test -x -s test.py --distro=bookworm --ver=$BUILD_NUMBER --app=paperless" \
-  2>&1 | tee -a "$LOG"
+{
+  step redis:$(pin redis) ./redis/build.sh
+  step ${PLATFORM_IMAGE} ./redis/test.sh
+  step postgres:$(pin postgresql) ./postgresql/build.sh
+  step ${PLATFORM_IMAGE} ./postgresql/test.sh
+  step ghcr.io/paperless-ngx/paperless-ngx:${VERSION} ./paperless/build.sh
+  step ${PLATFORM_IMAGE} ./paperless/test.sh
+  step golang:$(pin go) ./cli/build.sh
+  step ${PLATFORM_IMAGE} ./cli/test.sh
+  step debian:$(pin debian) ./package.sh ${NAME} ${BUILD}
+  step python:$(pin python) ./ci/test.sh test.py ${DISTRO} ${NAME}
+} 2>&1 | tee ${LOG}

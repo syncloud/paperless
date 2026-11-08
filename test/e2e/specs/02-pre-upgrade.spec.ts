@@ -1,13 +1,18 @@
-import { test } from '@playwright/test'
+import { test } from '../fixtures'
 import { shoot } from '../helpers/screenshot'
-import { login, uploadDocument, openDocuments, expectDocumentCount } from '../helpers/paperless'
+import { login, uploadDocument, expectDocumentCount } from '../helpers/paperless'
 
-test.describe('paperless before the upgrade', () => {
-  test('seed a document on the store version', async ({ page }, testInfo) => {
+test('seed a document on the store version', async ({ page }) => {
+  await test.step('log in through syncloud sso', async () => {
     await login(page)
+  })
+
+  await test.step('upload a document', async () => {
     await uploadDocument(page, 'simple.pdf')
-    await openDocuments(page)
+  })
+
+  await test.step('the document is listed', async () => {
     await expectDocumentCount(page, 1)
-    await shoot(page, testInfo, 'seeded')
+    await shoot(page, 'documents-before-upgrade')
   })
 })

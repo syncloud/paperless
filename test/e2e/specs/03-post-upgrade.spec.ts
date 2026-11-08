@@ -1,17 +1,15 @@
-import { test } from '@playwright/test'
+import { test } from '../fixtures'
 import { shoot } from '../helpers/screenshot'
-import { login, openDocuments, expectDocumentCount } from '../helpers/paperless'
+import { login, expectDocumentCount } from '../helpers/paperless'
 
-test.describe('paperless after the upgrade', () => {
-  test('sso login still works', async ({ page }, testInfo) => {
+test('sso login works and the seeded document survived the upgrade', async ({ page }) => {
+  await test.step('log in through syncloud sso', async () => {
     await login(page)
-    await shoot(page, testInfo, 'dashboard-after-upgrade')
+    await shoot(page, 'dashboard-after-upgrade')
   })
 
-  test('the document seeded before the upgrade survived', async ({ page }, testInfo) => {
-    await login(page)
-    await openDocuments(page)
+  await test.step('the document seeded before the upgrade is listed', async () => {
     await expectDocumentCount(page, 1)
-    await shoot(page, testInfo, 'documents-after-upgrade')
+    await shoot(page, 'documents-after-upgrade')
   })
 })

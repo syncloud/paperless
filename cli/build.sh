@@ -5,6 +5,8 @@ BUILD_DIR=${DIR}/../build/snap
 
 cd ${DIR}
 
+go test ./...
+
 mkdir -p ${BUILD_DIR}/meta/hooks ${BUILD_DIR}/bin
 
 for hook in install configure pre-refresh post-refresh; do

@@ -5,6 +5,8 @@ from syncloudlib.integration.hosts import add_host_alias
 from syncloudlib.integration.installer import local_install
 from syncloudlib.http import wait_for_rest
 
+import snapd
+
 TMP_DIR = '/tmp/syncloud'
 V3_FLOOR_MIGRATION = '1075_workflowaction_order'
 V3_SQUASHED_MIGRATIONS = ['0001_squashed', '0002_squashed']
@@ -50,6 +52,7 @@ def test_start(module_setup, app, device_host, domain, device):
     add_host_alias(app, device_host, domain)
     device.activated()
     device.run_ssh('mkdir -p {0}'.format(TMP_DIR), throw=False)
+    snapd.settle(device)
 
 
 def test_record_state_before_upgrade(device):
@@ -63,6 +66,10 @@ def test_record_state_before_upgrade(device):
 def test_upgrade(device_host, device_password, app_archive_path, app_domain):
     local_install(device_host, device_password, app_archive_path)
     wait_for_rest(requests.session(), "https://{0}".format(app_domain), 200, 100)
+
+
+def test_no_restarts_after_upgrade(device, app):
+    snapd.assert_no_restarts(device, app)
 
 
 def test_documents_survived(device):
