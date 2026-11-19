@@ -1,5 +1,5 @@
 local name = 'paperless';
-local version = '3.4.2';
+local version = '3.5.0';
 
 local go = '1.25';
 local postgresql = '15-bookworm';

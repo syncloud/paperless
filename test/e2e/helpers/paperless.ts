@@ -18,7 +18,13 @@ export async function login(page: Page) {
     await page.locator('#sign-in-button').click()
   }
 
+  const notNow = page.getByRole('button', { name: 'Not now' })
   const signUp = page.getByRole('button', { name: 'Sign up' })
+  await expect(notNow.or(signUp).or(appFrame(page)).first()).toBeVisible({ timeout: 120_000 })
+  if (await notNow.isVisible()) {
+    await notNow.click()
+  }
+
   await expect(signUp.or(appFrame(page)).first()).toBeVisible({ timeout: 120_000 })
   if (await signUp.isVisible()) {
     await signUp.click()
